@@ -1,4 +1,4 @@
-name := """penjualan-buku"""
+name         := """penjualan-buku"""
 organization := "com.example"
 
 version := "1.0-SNAPSHOT"
@@ -7,8 +7,15 @@ lazy val root = (project in file(".")).enablePlugins(PlayScala)
 
 scalaVersion := "2.13.16"
 
-libraryDependencies += guice
-libraryDependencies += "org.scalatestplus.play" %% "scalatestplus-play" % "7.0.2" % Test
+libraryDependencies ++= Seq(
+  guice,
+  evolutions,
+  jdbc,
+  "org.playframework.anorm" %% "anorm"        % "2.7.0",
+  "org.postgresql"           % "postgresql"   % "42.7.3",
+  // For file upload handling
+  "commons-io" % "commons-io" % "2.16.1"
+)
 
 // Adds additional packages into Twirl
 //TwirlKeys.templateImports += "com.example.controllers._"
