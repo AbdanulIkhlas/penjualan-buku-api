@@ -8,3 +8,12 @@ GET     /                           controllers.HomeController.index()
 
 # Map static resources from the /public folder to the /assets URL path
 GET     /assets/*file               controllers.Assets.versioned(path="/public", file: Asset)
+
+
+# Genres
+GET     /genres                     controllers.GenreController.getAllGenres
+GET     /genres/:id                 controllers.GenreController.getGenreById(id: Long)
+POST    /genres                     controllers.GenreController.createGenre
+PUT     /genres/:id                 controllers.GenreController.updateGenre(id: Long)
+DELETE  /genres/:id                 controllers.GenreController.softDeleteGenre(id: Long)
+DELETE  /genres/permanent/:id       controllers.GenreController.deleteGenre(id: Long)
