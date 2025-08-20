@@ -118,12 +118,30 @@ class DatabaseHelper @Inject() (db: Database)(implicit ec: ExecutionContext) {
     *   Future yang berisi jumlah baris yang terpengaruh (1 jika berhasil, 0 jika tidak ditemukan).
     */
   def softDeleteRowById(
-      tableName: String,       // nama tabel
-      idColumn: String,        // nama kolom id
-      idValue: Any,            // nilai id
+      tableName: String,           // nama tabel
+      idColumn: String,            // nama kolom id
+      idValue: Any,                // nilai id
       softDeleteColumnName: String // nama kolom soft delete
   ): Future[Int] = withConnection { implicit connection =>
-    val sql = SQL(s"UPDATE $tableName SET $softDeleteColumnName = TRUE WHERE $idColumn = {idValue}").on("idValue" -> idValue)
+    // NOTE : // kan where $idColumn = {idValue}, nah di on nya jg harus sama, karena {idValue} maka on nya "idValue" -> idValue(nilai dari id di parameter)
+    val sql =
+      SQL(s"UPDATE $tableName SET $softDeleteColumnName = TRUE WHERE $idColumn = {idValue}").on("idValue" -> idValue)
+    sql.executeUpdate()
+  }
+
+  /** Hapus genre permanen berdasarkan ID.
+    *
+    * @param id
+    *   ID genre yang akan dihapus.
+    * @return
+    *   Future yang berisi jumlah baris yang terpengaruh (1 jika berhasil, 0 jika tidak ditemukan).
+    */
+  def deletePermanentRowById(
+      tableName: String,
+      idColumn: String,
+      idValue: Any
+  ): Future[Int] = withConnection { implicit connection =>
+    val sql = SQL(s"DELETE FROM $tableName WHERE $idColumn = {idValue}").on("idValue" -> idValue)
     sql.executeUpdate()
   }
 
@@ -147,6 +165,32 @@ class DatabaseHelper @Inject() (db: Database)(implicit ec: ExecutionContext) {
     withConnection { implicit conn =>
       query.as(parser.*)
     }
+  }
+
+  /** Helper untuk SELECT by ID
+    *
+    * @param tableName
+    *   Nama tabel.
+    * @param idColumn
+    *   Nama kolom primary key / identifier.
+    * @param idValue
+    *   Nilai primary key untuk WHERE.
+    * @param parser
+    *   Parser Anorm untuk mengonversi row ResultSet menjadi objek.
+    * @tparam T
+    *   Tipe objek yang akan dikembalikan.
+    * @return
+    *   Future yang berisi Option[T], None jika tidak ditemukan.
+    */
+  def findByIdRow[T](
+      tableName: String,
+      idColumn: String,
+      idValue: Any,
+      parser: RowParser[T]
+  ): Future[Option[T]] = withConnection { implicit connection =>
+    val sql = SQL(s"SELECT * FROM $tableName WHERE $idColumn = {$idColumn}").on(idColumn -> idValue)
+
+    sql.as(parser.singleOpt)
   }
 
   // Implicit untuk handle Any di NamedParameter value

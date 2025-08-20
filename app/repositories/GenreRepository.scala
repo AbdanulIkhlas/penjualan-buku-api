@@ -82,7 +82,7 @@ class GenreRepository @Inject() (db: Database, dbHelper: DatabaseHelper)(implici
 //      .executeUpdate()
 //  }
   def softDelete(id: Long): Future[Int] = {
-    print(s"[DEBUG] softDelete jalan di Genre id: $id")
+    print(s"[DEBUG] softDelete  Genre id: $id")
     dbHelper.softDeleteRowById(
       tableName = "genres",
       idColumn = "id",
@@ -98,9 +98,17 @@ class GenreRepository @Inject() (db: Database, dbHelper: DatabaseHelper)(implici
     * @return
     *   Future yang berisi jumlah baris yang terpengaruh (1 jika berhasil, 0 jika tidak ditemukan).
     */
-  def delete(id: Long): Future[Int] = dbHelper.withTransaction { implicit connection =>
-    SQL"DELETE FROM genres WHERE id = $id"
-      .executeUpdate()
+//  def delete(id: Long): Future[Int] = dbHelper.withTransaction { implicit connection =>
+//    SQL"DELETE FROM genres WHERE id = $id"
+//      .executeUpdate()
+//  }
+  def delete(id: Long): Future[Int] = {
+    print(s"[DEBUG] delete permanen  Genre id: $id")
+    dbHelper.deletePermanentRowById(
+      tableName = "genres",
+      idColumn = "id",
+      idValue = id
+    )
   }
 
   /** Menemukan semua genre.
@@ -127,8 +135,16 @@ class GenreRepository @Inject() (db: Database, dbHelper: DatabaseHelper)(implici
     * @return
     *   Future yang berisi Option[Genre], None jika tidak ditemukan.
     */
-  def findById(id: Long): Future[Option[Genre]] = dbHelper.withConnection { implicit connection =>
-    SQL"SELECT id, name, description FROM genres WHERE id = $id"
-      .as(Genre.parser.singleOpt)
-  }
+//  def findById(id: Long): Future[Option[Genre]] = dbHelper.withConnection { implicit connection =>
+//    SQL"SELECT id, name, description FROM genres WHERE id = $id"
+//      .as(Genre.parser.singleOpt)
+//  }
+  def findById(id: Long): Future[Option[Genre]] =
+    dbHelper.findByIdRow[Genre](
+      tableName = "genres",
+      idColumn = "id",
+      idValue = id,
+      parser = Genre.parser
+    )
+
 }
