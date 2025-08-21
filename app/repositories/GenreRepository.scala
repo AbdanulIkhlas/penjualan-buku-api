@@ -104,7 +104,7 @@ class GenreRepository @Inject() (db: Database, dbHelper: DatabaseHelper)(implici
     )
   }
 
-  /** Menemukan semua genre.
+  /** Tampilkan semua genre.
     *
     * @return
     *   Future yang berisi daftar objek Genre.
@@ -121,7 +121,7 @@ class GenreRepository @Inject() (db: Database, dbHelper: DatabaseHelper)(implici
     )
   }
 
-  /** Menemukan genre berdasarkan ID.
+  /** Tampilkan genre berdasarkan ID.
     *
     * @param id
     *   ID genre.
