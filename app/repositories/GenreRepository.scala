@@ -132,12 +132,13 @@ class GenreRepository @Inject() (db: Database, dbHelper: DatabaseHelper)(implici
 //    SQL"SELECT id, name, description FROM genres WHERE id = $id"
 //      .as(Genre.parser.singleOpt)
 //  }
-  def findById(id: Long): Future[Option[Genre]] =
+  def findById(id: Long): Future[Option[Genre]] ={
     dbHelper.findByIdRow[Genre](
       tableName = "genres",
       idColumn = "id",
       idValue = id,
       parser = Genre.parser
     )
+  }
 
 }
