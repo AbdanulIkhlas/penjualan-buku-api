@@ -8,20 +8,13 @@ import play.api.db.Database
 import scala.concurrent.{ExecutionContext, Future}
 import utils.DatabaseHelper
 
-/** Repository untuk operasi database pada tabel Genre.
-  * @param db
-  *   Instans Play Database.
-  * @param ec
-  *   ExecutionContext untuk operasi asinkron.
-  * @param dbHelper
-  *   Instans DatabaseHelper untuk manajemen koneksi/transaksi.
-  */
+//Repository untuk operasi database pada tabel Genre.
 @Singleton
 class GenreRepository @Inject() (db: Database, dbHelper: DatabaseHelper)(implicit ec: ExecutionContext) {
 
   /** Tambah genre baru.
     * @param genre
-    *   Objek Genre yang akan ditambahkan (id harus None).
+    *   Objek Genre yang akan ditambahkan (id dan is_delete_genres  None).
     * @return
     *   Future yang berisi objek Genre yang telah ditambahkan dengan ID yang dihasilkan.
     */
