@@ -4,10 +4,8 @@ import javax.inject._
 import play.api.mvc._
 import play.api.libs.json._
 import repositories.UserRepository
-import models.User
-import utils.ResponseHelper
 import utils.ControllerHelper
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.ExecutionContext
 
 /** Controller untuk mengelola operasi CRUD pada entitas User.
   *

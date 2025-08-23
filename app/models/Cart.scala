@@ -4,7 +4,6 @@ import anorm._
 import anorm.SqlParser._
 import play.api.libs.json.{Json, OFormat}
 import java.time.LocalDateTime
-import java.time.format.DateTimeFormatter
 
 /** Model keranjang belanja.
     *
@@ -25,7 +24,7 @@ case class Cart(
     id: Option[Long],
     userId: Long,
     price: BigDecimal,
-    status: String, // 'active' or 'ordered' or 'cancelled'
+    status: String, // 'active' or 'ordered'
     createdAt: Option[LocalDateTime],
     updatedAt: Option[LocalDateTime]
 )

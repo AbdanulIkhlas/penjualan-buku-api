@@ -4,10 +4,9 @@ import javax.inject._
 import play.api.mvc._
 import play.api.libs.json._
 import repositories.GenreRepository
-import models.Genre
-import utils.{ControllerHelper, ResponseHelper}
+import utils.ControllerHelper
 
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.ExecutionContext
 
 /** Controller untuk mengelola operasi CRUD pada entitas Genre.
   *

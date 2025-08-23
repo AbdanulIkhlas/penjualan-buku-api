@@ -1,8 +1,6 @@
 package repositories
 
 import models.User
-import anorm._
-import anorm.SqlParser._
 import javax.inject.{Inject, Singleton}
 import play.api.db.Database
 import scala.concurrent.{ExecutionContext, Future}
