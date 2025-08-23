@@ -10,11 +10,12 @@ import utils.DatabaseHelper
 
 //Repository untuk operasi database pada tabel Genre.
 @Singleton
-class GenreRepository @Inject() (db: Database, dbHelper: DatabaseHelper)(implicit ec: ExecutionContext) {
+class GenreRepository @Inject() (db: Database, dbHelper: DatabaseHelper)(implicit ec: ExecutionContext)
+    extends BaseRepository[Genre] {
 
   /** Tambah genre baru.
     * @param genre
-    *   Objek Genre yang akan ditambahkan (id dan is_delete_genres  None).
+    *   Objek Genre yang akan ditambahkan (id dan is_delete_genres None).
     * @return
     *   Future yang berisi objek Genre yang telah ditambahkan dengan ID yang dihasilkan.
     */
@@ -25,7 +26,7 @@ class GenreRepository @Inject() (db: Database, dbHelper: DatabaseHelper)(implici
 //      .executeInsert(SqlParser.scalar[Long].single)
 //    genre.copy(id = Some(id))
 //  }
-  def create(genre: Genre): Future[Genre] = {
+  override def create(genre: Genre): Future[Genre] = {
     val data = Map(
       "name"             -> genre.name,
       "description"      -> genre.description,
@@ -51,7 +52,7 @@ class GenreRepository @Inject() (db: Database, dbHelper: DatabaseHelper)(implici
 //    """
 //      .executeUpdate()
 //  }
-  def update(id: Long, genre: Genre): Future[Int] = {
+  override def update(id: Long, genre: Genre): Future[Int] = {
     dbHelper.updateRowById(
       tableName = "genres",
       data = Map(
@@ -74,7 +75,7 @@ class GenreRepository @Inject() (db: Database, dbHelper: DatabaseHelper)(implici
 //    SQL"UPDATE genres SET is_delete_genres = TRUE WHERE id = $id"
 //      .executeUpdate()
 //  }
-  def softDelete(id: Long): Future[Int] = {
+  override def softDelete(id: Long): Future[Int] = {
     print(s"[DEBUG] softDelete  Genre id: $id")
     dbHelper.softDeleteRowById(
       tableName = "genres",
@@ -95,7 +96,7 @@ class GenreRepository @Inject() (db: Database, dbHelper: DatabaseHelper)(implici
 //    SQL"DELETE FROM genres WHERE id = $id"
 //      .executeUpdate()
 //  }
-  def delete(id: Long): Future[Int] = {
+  override def delete(id: Long): Future[Int] = {
     print(s"[DEBUG] delete permanen  Genre id: $id")
     dbHelper.deletePermanentRowById(
       tableName = "genres",
@@ -113,7 +114,7 @@ class GenreRepository @Inject() (db: Database, dbHelper: DatabaseHelper)(implici
 //    SQL"SELECT id, name, description FROM genres WHERE is_delete_genres = FALSE"
 //      .as(Genre.parser.*)
 //  }
-  def findAll(): Future[Seq[Genre]] = {
+  override def findAll(): Future[Seq[Genre]] = {
     dbHelper.findAll[Genre](
       table = "genres",
       parser = Genre.parser,
@@ -132,7 +133,7 @@ class GenreRepository @Inject() (db: Database, dbHelper: DatabaseHelper)(implici
 //    SQL"SELECT id, name, description FROM genres WHERE id = $id"
 //      .as(Genre.parser.singleOpt)
 //  }
-  def findById(id: Long): Future[Option[Genre]] ={
+  override def findById(id: Long): Future[Option[Genre]] = {
     dbHelper.findByIdRow[Genre](
       tableName = "genres",
       idColumn = "id",
