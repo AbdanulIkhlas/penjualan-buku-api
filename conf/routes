@@ -11,9 +11,17 @@ GET     /assets/*file               controllers.Assets.versioned(path="/public",
 
 
 # Genres
-GET     /genres                     controllers.GenreController.getAllGenres
-GET     /genres/:id                 controllers.GenreController.getGenreById(id: Long)
 POST    /genres                     controllers.GenreController.createGenre
 PUT     /genres/:id                 controllers.GenreController.updateGenre(id: Long)
 DELETE  /genres/:id                 controllers.GenreController.softDeleteGenre(id: Long)
 DELETE  /genres/permanent/:id       controllers.GenreController.deleteGenre(id: Long)
+GET     /genres                     controllers.GenreController.getAllGenres
+GET     /genres/:id                 controllers.GenreController.getGenreById(id: Long)
+
+# Users
+POST    /users                      controllers.UserController.createUser
+PUT     /users/:id                  controllers.UserController.updateUser(id: Long)
+DELETE  /users/:id                  controllers.UserController.softDeleteUser(id: Long)
+DELETE  /users/permanent/:id        controllers.UserController.deleteUser(id: Long)
+GET     /users                      controllers.UserController.getAllUsers
+GET     /users/:id                  controllers.UserController.getUserById(id: Long)
