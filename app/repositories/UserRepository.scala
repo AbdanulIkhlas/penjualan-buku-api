@@ -10,7 +10,8 @@ import utils.DatabaseHelper
 
 // Repository untuk operasi database pada tabel User.
 @Singleton
-class UserRepository @Inject() (db: Database, dbHelper: DatabaseHelper)(implicit ec: ExecutionContext) {
+class UserRepository @Inject() (db: Database, dbHelper: DatabaseHelper)(implicit ec: ExecutionContext)
+    extends BaseRepository[User] {
 
   /** Tambah user baru.
     *
@@ -19,7 +20,7 @@ class UserRepository @Inject() (db: Database, dbHelper: DatabaseHelper)(implicit
     * @return
     *   Future yang berisi objek User yang telah ditambahkan dengan ID yang dihasilkan.
     */
-  def create(user: User): Future[User] = {
+  override def create(user: User): Future[User] = {
     val data = Map(
       "name"    -> user.name,
       "email"   -> user.email,
@@ -40,7 +41,7 @@ class UserRepository @Inject() (db: Database, dbHelper: DatabaseHelper)(implicit
     * @return
     *   Future yang berisi jumlah baris yang terpengaruh (1 jika berhasil, 0 jika tidak ditemukan).
     */
-  def update(id: Long, user: User): Future[Int] = {
+  override def update(id: Long, user: User): Future[Int] = {
     dbHelper.updateRowById(
       tableName = "users",
       data = Map(
@@ -61,7 +62,7 @@ class UserRepository @Inject() (db: Database, dbHelper: DatabaseHelper)(implicit
     * @return
     *   Future yang berisi jumlah baris yang terpengaruh (1 jika berhasil, 0 jika tidak ditemukan).
     */
-  def softDelete(id: Long): Future[Int] = {
+  override def softDelete(id: Long): Future[Int] = {
     dbHelper.softDeleteRowById(
       tableName = "users",
       idColumn = "id",
@@ -77,7 +78,7 @@ class UserRepository @Inject() (db: Database, dbHelper: DatabaseHelper)(implicit
     * @return
     *   Future yang berisi jumlah baris yang terpengaruh (1 jika berhasil, 0 jika tidak ditemukan).
     */
-  def delete(id: Long): Future[Int] = {
+  override def delete(id: Long): Future[Int] = {
     dbHelper.deletePermanentRowById(
       tableName = "users",
       idColumn = "id",
@@ -90,7 +91,7 @@ class UserRepository @Inject() (db: Database, dbHelper: DatabaseHelper)(implicit
     * @return
     *   Future yang berisi daftar objek User.
     */
-  def findAll(): Future[Seq[User]] = {
+  override def findAll(): Future[Seq[User]] = {
     dbHelper.findAll[User](
       table = "users",
       parser = User.parser,
@@ -105,7 +106,7 @@ class UserRepository @Inject() (db: Database, dbHelper: DatabaseHelper)(implicit
     * @return
     *   Future yang berisi Option[User], None jika tidak ditemukan.
     */
-  def findById(id: Long): Future[Option[User]] = {
+  override def findById(id: Long): Future[Option[User]] = {
     dbHelper.findByIdRow[User](
       tableName = "users",
       idColumn = "id",
