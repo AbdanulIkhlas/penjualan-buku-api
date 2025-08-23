@@ -21,7 +21,7 @@ case class User(
     id: Option[Long],
     name: String,
     email: String,
-    cityId: Option[String],
+    city_id: Option[String],
     address: Option[String]
 )
 
@@ -35,8 +35,8 @@ object User {
       get[String]("name") ~
       get[String]("email") ~
       get[Option[String]]("city_id") ~
-      get[Option[String]]("address") map { case id ~ name ~ email ~ cityId ~ address =>
-        User(id, name, email, cityId, address)
+      get[Option[String]]("address") map { case id ~ name ~ email ~ city_id ~ address =>
+        User(id, name, email, city_id, address)
       }
   }
 }
