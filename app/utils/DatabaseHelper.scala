@@ -52,7 +52,7 @@ class DatabaseHelper @Inject() (db: Database)(implicit ec: ExecutionContext) {
   def insertAndReturnId(
       tableName: String,
       data: Map[String, Any]
-  ): Future[Long] = withConnection { implicit connection =>
+  ): Future[Long] = withTransaction { implicit connection =>
     val columnNames: String     = data.keys.mkString(", ")
     val keyValueColumns: String = data.keys.map(key => s"{$key}").mkString(", ")
 
@@ -89,7 +89,7 @@ class DatabaseHelper @Inject() (db: Database)(implicit ec: ExecutionContext) {
       data: Map[String, Any],
       idColumn: String,
       idValue: Any
-  ): Future[Int] = withConnection { implicit connection =>
+  ): Future[Int] = withTransaction { implicit connection =>
     val setColumn: String = data.keys.map(col => s"$col = {$col}").mkString(", ")
 
     // Mapping kolom SET menjadi NamedParameter → {columnName -> columnValue}
@@ -122,7 +122,7 @@ class DatabaseHelper @Inject() (db: Database)(implicit ec: ExecutionContext) {
       idColumn: String,            // nama kolom id
       idValue: Any,                // nilai id
       softDeleteColumnName: String // nama kolom soft delete
-  ): Future[Int] = withConnection { implicit connection =>
+  ): Future[Int] = withTransaction { implicit connection =>
     // NOTE : // kan where $idColumn = {idValue}, nah di on nya jg harus sama, karena {idValue} maka on nya "idValue" -> idValue(nilai dari id di parameter)
     val sql =
       SQL(s"UPDATE $tableName SET $softDeleteColumnName = TRUE WHERE $idColumn = {idValue}").on("idValue" -> idValue)
