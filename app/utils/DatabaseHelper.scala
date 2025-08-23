@@ -18,12 +18,12 @@ class DatabaseHelper @Inject() (db: Database)(implicit ec: ExecutionContext) {
     *
     * @param block
     *   Blok kode yang akan dijalankan dengan koneksi database.
-    * @tparam A
+    * @tparam T
     *   Tipe hasil dari blok kode.
     * @return
     *   Future yang berisi hasil dari blok kode.
     */
-  def withConnection[A](block: java.sql.Connection => A): Future[A] = Future {
+  private def withConnection[T](block: java.sql.Connection => T): Future[T] = Future {
     db.withConnection(block)
   }
 
@@ -31,12 +31,12 @@ class DatabaseHelper @Inject() (db: Database)(implicit ec: ExecutionContext) {
     *
     * @param block
     *   Blok kode yang akan dijalankan dengan koneksi database dalam transaksi.
-    * @tparam A
+    * @tparam T
     *   Tipe hasil dari blok kode.
     * @return
     *   Future yang berisi hasil dari blok kode.
     */
-  def withTransaction[A](block: java.sql.Connection => A): Future[A] = Future {
+  private def withTransaction[T](block: java.sql.Connection => T): Future[T] = Future {
     db.withTransaction(block)
   }
 
