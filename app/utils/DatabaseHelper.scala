@@ -75,7 +75,7 @@ class DatabaseHelper @Inject() (db: Database)(implicit ec: ExecutionContext) {
     *
     * @param tableName
     *   Nama tabel.
-    * @param columnValues
+    * @param data
     *   Kolom yang akan diupdate beserta nilainya.
     * @param idColumn
     *   Nama kolom primary key / identifier.
@@ -131,8 +131,12 @@ class DatabaseHelper @Inject() (db: Database)(implicit ec: ExecutionContext) {
 
   /** Hapus genre permanen berdasarkan ID.
     *
-    * @param id
-    *   ID genre yang akan dihapus.
+    * @param tableName
+    *   Nama tabel.
+    * @param idColumn
+    *   Nama kolom primary key / identifier.
+    * @param idValue
+    *   Nilai primary key untuk WHERE.
     * @return
     *   Future yang berisi jumlah baris yang terpengaruh (1 jika berhasil, 0 jika tidak ditemukan).
     */
