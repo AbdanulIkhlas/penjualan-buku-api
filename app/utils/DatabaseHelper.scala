@@ -125,7 +125,7 @@ class DatabaseHelper @Inject() (db: Database)(implicit ec: ExecutionContext) {
   ): Future[Int] = withTransaction { implicit connection =>
     // NOTE : // kan where $idColumn = {idValue}, nah di on nya jg harus sama, karena {idValue} maka on nya "idValue" -> idValue(nilai dari id di parameter)
     val sql =
-      SQL(s"UPDATE $tableName SET $softDeleteColumnName = TRUE WHERE $idColumn = {idValue}").on("idValue" -> idValue)
+      SQL(s"UPDATE $tableName SET $softDeleteColumnName = TRUE WHERE $idColumn = {idValue} AND $softDeleteColumnName = FALSE").on("idValue" -> idValue)
     sql.executeUpdate()
   }
 
