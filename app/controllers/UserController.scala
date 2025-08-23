@@ -35,7 +35,7 @@ class UserController @Inject() (
     ControllerHelper.updateData(id = id, request = request, repository = userRepository, entityName = "User")
   }
 
-  // Menghapus user secara permanen berdasarkan ID. Endpoint: DELETE /users/:id
+  // Menghapus user secara permanen berdasarkan ID. Endpoint: DELETE /users/permanent/:id
   def deleteUser(id: Long): Action[AnyContent] = Action.async {
     ControllerHelper.deleteData(id = id, repository = userRepository, entityName = "User")
   }
