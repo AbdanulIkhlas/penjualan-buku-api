@@ -51,7 +51,8 @@ class UserRepository @Inject() (db: Database, dbHelper: DatabaseHelper)(implicit
         "address" -> user.address
       ),
       idColumn = "id",
-      idValue = id
+      idValue = id,
+      softDeleteColumnName = "is_delete_users"
     )
   }
 

@@ -88,7 +88,8 @@ class DatabaseHelper @Inject() (db: Database)(implicit ec: ExecutionContext) {
       tableName: String,
       data: Map[String, Any],
       idColumn: String,
-      idValue: Any
+      idValue: Any,
+      softDeleteColumnName: String
   ): Future[Int] = withTransaction { implicit connection =>
     val setColumn: String = data.keys.map(col => s"$col = {$col}").mkString(", ")
 
@@ -98,7 +99,7 @@ class DatabaseHelper @Inject() (db: Database)(implicit ec: ExecutionContext) {
 
     val mappingWhere: NamedParameter       = NamedParameter(s"where_$idColumn", idValue)
     val allParameters: Seq[NamedParameter] = mappingValueColumn :+ mappingWhere
-    val sqlQuery = SQL(s"UPDATE $tableName SET $setColumn WHERE $idColumn = {where_$idColumn}").on(allParameters: _*)
+    val sqlQuery = SQL(s"UPDATE $tableName SET $setColumn WHERE $idColumn = {where_$idColumn} AND $softDeleteColumnName = FALSE").on(allParameters: _*)
 
     // Eksekusi update → return jumlah row yang terupdate
     sqlQuery.executeUpdate()

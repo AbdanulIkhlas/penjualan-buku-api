@@ -60,7 +60,8 @@ class GenreRepository @Inject() (db: Database, dbHelper: DatabaseHelper)(implici
         "description" -> genre.description
       ),
       idColumn = "id",
-      idValue = id
+      idValue = id,
+      softDeleteColumnName = "is_delete_genres"
     )
   }
 
