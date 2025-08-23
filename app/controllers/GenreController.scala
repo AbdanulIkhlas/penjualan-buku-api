@@ -24,8 +24,7 @@ class GenreController @Inject() (
 )(implicit ec: ExecutionContext)
     extends AbstractController(cc) {
 
-  /** Membuat genre baru. Endpoint: POST /genres
-    */
+  // Menambahkan genre baru. Endpoint: POST /genres
   def createGenre: Action[JsValue] = Action.async(parse.json) { request =>
 //    println("Isi request body: " + request.body)
     request.body
@@ -51,11 +50,7 @@ class GenreController @Inject() (
       )
   }
 
-  /** Memperbarui genre yang sudah ada. Endpoint: PUT /genres/:id
-    *
-    * @param id
-    *   ID genre yang akan diperbarui.
-    */
+  // Memperbarui genre yang sudah ada. Endpoint: PUT /genres/:id
   def updateGenre(id: Long): Action[JsValue] = Action.async(parse.json) { request =>
     request.body
       .validate[Genre]
@@ -80,11 +75,7 @@ class GenreController @Inject() (
       )
   }
 
-  /** Menghapus genre berdasarkan ID. Endpoint: DELETE /genres/:id
-    *
-    * @param id
-    *   ID genre yang akan dihapus.
-    */
+  // Menghapus genre berdasarkan ID. Endpoint: DELETE /genres/permanent/:id
   def deleteGenre(id: Long): Action[AnyContent] = Action.async {
     genreRepository
       .delete(id)
@@ -100,6 +91,7 @@ class GenreController @Inject() (
       }
   }
 
+  // Menghapus genre berdasarkan ID. Endpoint: DELETE /genres/:id
   def softDeleteGenre(id: Long): Action[AnyContent] = Action.async {
     genreRepository
       .softDelete(id)
@@ -115,8 +107,7 @@ class GenreController @Inject() (
       }
   }
 
-  /** Mendapatkan semua genre. Endpoint: GET /genres
-    */
+  // Mendapatkan semua genre. Endpoint: GET /genres
   def getAllGenres: Action[AnyContent] = Action.async {
     genreRepository
       .findAll()
@@ -128,11 +119,7 @@ class GenreController @Inject() (
       }
   }
 
-  /** Mendapatkan genre berdasarkan ID. Endpoint: GET /genres/:id
-    *
-    * @param id
-    *   ID genre.
-    */
+  // Mendapatkan genre berdasarkan ID. Endpoint: GET /genres/:id
   def getGenreById(id: Long): Action[AnyContent] = Action.async {
     genreRepository
       .findById(id)
