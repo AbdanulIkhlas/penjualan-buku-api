@@ -44,7 +44,6 @@ object ControllerHelper {
           repository
             .create(entity) // dalam bentuk Future[T] : dimana T = Case class
             .map { createdEntity =>
-              println("[DEBUG] createdEntity" + createdEntity)
               ResponseHelper.created(createdEntity, s"$entityName berhasil dibuat.")
             }
             .recover { case e: Exception =>
@@ -82,6 +81,8 @@ object ControllerHelper {
       entityName: String
   )(implicit reads: Reads[T], writes: Writes[T], ec: ExecutionContext): Future[Result] = {
     println(s"[DEBUG] request body update $entityName: " + request.body)
+    println(s"[DEBUG] dipanggil dari: $entityName")
+    println(s"[DEBUG] implicit reads digunakan: ${implicitly[Reads[T]]}")
 
     request.body
       .validate[T]
@@ -155,7 +156,7 @@ object ControllerHelper {
     * @param ec
     *   ExecutionContext karena menggunakan future (async)
     * @tparam T
-   *    case class tabel (contoh : User, Genre, dsb)
+    *   case class tabel (contoh : User, Genre, dsb)
     * @return
     */
   def softDeleteData[T](
@@ -211,22 +212,22 @@ object ControllerHelper {
   }
 
   /** General function untuk mengambil data berdasarkan ID
-   *
-   * @param id
-   *   ID data yang akan diambil
-   * @param repository
-   *   repository tabel
-   * @param entityName
-   *   nama tabel
-   * @param writes
-   *   Writes[T] untuk mengonversi case class ke JSON
-   * @param ec
-   *   ExecutionContext karena menggunakan future (async)
-   * @tparam T
-   *   case class tabel
-   * @return
-   *   Future[Result]
-   */
+    *
+    * @param id
+    *   ID data yang akan diambil
+    * @param repository
+    *   repository tabel
+    * @param entityName
+    *   nama tabel
+    * @param writes
+    *   Writes[T] untuk mengonversi case class ke JSON
+    * @param ec
+    *   ExecutionContext karena menggunakan future (async)
+    * @tparam T
+    *   case class tabel
+    * @return
+    *   Future[Result]
+    */
   def findByIdData[T](
       id: Long,
       repository: BaseRepository[T],
@@ -246,5 +247,4 @@ object ControllerHelper {
         ResponseHelper.internalServerError(s"Gagal mengambil $entityName: ${e.getMessage}")
       }
   }
-
 }

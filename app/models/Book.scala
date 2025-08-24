@@ -27,10 +27,10 @@ case class Book(
     id: Option[Long],
     title: String,
     author: String,
-    genreId: Long,
+    genre_id: Long,
     description: Option[String],
     price: BigDecimal,
-    imageUrl: Option[String],
+    image_url: Option[String],
     stock: Int
 )
 
@@ -47,8 +47,8 @@ object Book {
       get[Option[String]]("description") ~
       get[BigDecimal]("price") ~
       get[Option[String]]("image_url") ~
-      get[Int]("stock") map { case id ~ title ~ author ~ genreId ~ description ~ price ~ imageUrl ~ stock =>
-        Book(id, title, author, genreId, description, price, imageUrl, stock)
+      get[Int]("stock") map { case id ~ title ~ author ~ genre_id ~ description ~ price ~ image_url ~ stock =>
+        Book(id, title, author, genre_id, description, price, image_url, stock)
       }
   }
 }
