@@ -40,6 +40,10 @@ class DatabaseHelper @Inject() (db: Database)(implicit ec: ExecutionContext) {
     db.withTransaction(block)
   }
 
+//  private def filterDataType(key: String): String =
+//    if (key.indexOf(".") == -1) key
+//    else key.substring(0, key.indexOf("."))
+
   /** Tambah data
     *
     * @param tableName
@@ -61,9 +65,12 @@ class DatabaseHelper @Inject() (db: Database)(implicit ec: ExecutionContext) {
       data.map { case (columnName, columnValue) =>
         NamedParameter(columnName, columnValue)
       }.toSeq
+    println("[DEBUG] Data: " + data)
+    println("[DEBUG] Column names: " + columnNames)
+    println("[DEBUG] Key value columns: " + keyValueColumns)
+    println("[DEBUG] Mapping value column: " + mappingValueColumn)
 
     val sqlQuery = SQL(s"INSERT INTO $tableName ($columnNames) VALUES ($keyValueColumns)").on(mappingValueColumn: _*)
-    println(s"[DEBUG] SQL Query: $sqlQuery ")
 
     val insertedId: Long = sqlQuery.executeInsert(SqlParser.scalar[Long].single)
 
@@ -99,7 +106,9 @@ class DatabaseHelper @Inject() (db: Database)(implicit ec: ExecutionContext) {
 
     val mappingWhere: NamedParameter       = NamedParameter(s"where_$idColumn", idValue)
     val allParameters: Seq[NamedParameter] = mappingValueColumn :+ mappingWhere
-    val sqlQuery = SQL(s"UPDATE $tableName SET $setColumn WHERE $idColumn = {where_$idColumn} AND $softDeleteColumnName = FALSE").on(allParameters: _*)
+    val sqlQuery = SQL(
+      s"UPDATE $tableName SET $setColumn WHERE $idColumn = {where_$idColumn} AND $softDeleteColumnName = FALSE"
+    ).on(allParameters: _*)
 
     // Eksekusi update → return jumlah row yang terupdate
     sqlQuery.executeUpdate()
@@ -126,7 +135,9 @@ class DatabaseHelper @Inject() (db: Database)(implicit ec: ExecutionContext) {
   ): Future[Int] = withTransaction { implicit connection =>
     // NOTE : // kan where $idColumn = {idValue}, nah di on nya jg harus sama, karena {idValue} maka on nya "idValue" -> idValue(nilai dari id di parameter)
     val sql =
-      SQL(s"UPDATE $tableName SET $softDeleteColumnName = TRUE WHERE $idColumn = {idValue} AND $softDeleteColumnName = FALSE").on("idValue" -> idValue)
+      SQL(
+        s"UPDATE $tableName SET $softDeleteColumnName = TRUE WHERE $idColumn = {idValue} AND $softDeleteColumnName = FALSE"
+      ).on("idValue" -> idValue)
     sql.executeUpdate()
   }
 
@@ -204,6 +215,9 @@ class DatabaseHelper @Inject() (db: Database)(implicit ec: ExecutionContext) {
       case v: String                  => s.setString(index, v)
       case v: Int                     => s.setInt(index, v)
       case v: Long                    => s.setLong(index, v)
+      case v: Double                  => s.setDouble(index, v)
+      case v: scala.math.BigDecimal   => s.setBigDecimal(index, v.bigDecimal)
+      case v: java.math.BigDecimal    => s.setBigDecimal(index, v)
       case v: Boolean                 => s.setBoolean(index, v)
       case v: java.util.Date          => s.setTimestamp(index, new java.sql.Timestamp(v.getTime))
       case v: java.time.LocalDate     => s.setDate(index, java.sql.Date.valueOf(v))
@@ -214,4 +228,5 @@ class DatabaseHelper @Inject() (db: Database)(implicit ec: ExecutionContext) {
       case other                      => s.setObject(index, other.toString)
     }
   }
+
 }
