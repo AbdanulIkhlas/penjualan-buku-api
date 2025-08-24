@@ -37,7 +37,7 @@ class BookRepository @Inject() (db: Database, dbHelper: DatabaseHelper)(implicit
   override def update(id: Long, book: Book): Future[Int] = {
     dbHelper.updateRowById(
       tableName = "books",
-      data = Map(
+      data = ListMap(
         "title"       -> book.title,
         "author"      -> book.author,
         "genre_id"    -> book.genre_id,
