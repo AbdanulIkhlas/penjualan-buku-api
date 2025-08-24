@@ -25,3 +25,11 @@ DELETE  /users/:id                  controllers.UserController.softDeleteUser(id
 DELETE  /users/permanent/:id        controllers.UserController.deleteUser(id: Long)
 GET     /users                      controllers.UserController.getAllUsers
 GET     /users/:id                  controllers.UserController.getUserById(id: Long)
+
+# Books
+POST    /books                      controllers.BookController.createBook
+PUT     /books/:id                  controllers.BookController.updateBook(id: Long)
+DELETE  /books/:id                  controllers.BookController.softDeleteBook(id: Long)
+DELETE  /books/permanent/:id        controllers.BookController.deleteBook(id: Long)
+GET     /books                      controllers.BookController.getAllBooks
+GET     /books/:id                  controllers.BookController.getBookById(id: Long)
