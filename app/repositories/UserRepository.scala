@@ -5,6 +5,7 @@ import javax.inject.{Inject, Singleton}
 import play.api.db.Database
 import scala.concurrent.{ExecutionContext, Future}
 import utils.DatabaseHelper
+import scala.collection.immutable.ListMap
 
 // Repository untuk operasi database pada tabel User.
 @Singleton
@@ -19,7 +20,7 @@ class UserRepository @Inject() (db: Database, dbHelper: DatabaseHelper)(implicit
     *   Future yang berisi objek User yang telah ditambahkan dengan ID yang dihasilkan.
     */
   override def create(user: User): Future[User] = {
-    val data = Map(
+    val data = ListMap(
       "name"    -> user.name,
       "email"   -> user.email,
       "city_id" -> user.city_id,
@@ -42,7 +43,7 @@ class UserRepository @Inject() (db: Database, dbHelper: DatabaseHelper)(implicit
   override def update(id: Long, user: User): Future[Int] = {
     dbHelper.updateRowById(
       tableName = "users",
-      data = Map(
+      data = ListMap(
         "name"    -> user.name,
         "email"   -> user.email,
         "city_id" -> user.city_id,

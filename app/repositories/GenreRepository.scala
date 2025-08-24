@@ -5,6 +5,7 @@ import javax.inject.{Inject, Singleton}
 import play.api.db.Database
 import scala.concurrent.{ExecutionContext, Future}
 import utils.DatabaseHelper
+import scala.collection.immutable.ListMap
 
 //Repository untuk operasi database pada tabel Genre.
 @Singleton
@@ -25,7 +26,7 @@ class GenreRepository @Inject() (db: Database, dbHelper: DatabaseHelper)(implici
 //    genre.copy(id = Some(id))
 //  }
   override def create(genre: Genre): Future[Genre] = {
-    val data = Map(
+    val data = ListMap(
       "name"             -> genre.name,
       "description"      -> genre.description,
       "is_delete_genres" -> false
@@ -53,7 +54,7 @@ class GenreRepository @Inject() (db: Database, dbHelper: DatabaseHelper)(implici
   override def update(id: Long, genre: Genre): Future[Int] = {
     dbHelper.updateRowById(
       tableName = "genres",
-      data = Map(
+      data = ListMap(
         "name"        -> genre.name,
         "description" -> genre.description
       ),
