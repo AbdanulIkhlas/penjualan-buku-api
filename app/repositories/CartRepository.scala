@@ -37,7 +37,7 @@ extends BaseRepository[Cart] {
         "user_id"       -> cart.user_id,
         "price"         -> cart.price,
         "status"        -> cart.status,
-        "created_at"    -> LocalDateTime.now(),
+        "created_at"    -> cart.createdAt,
         "updated_at"    -> LocalDateTime.now()
       ),
       idColumn = "id",
