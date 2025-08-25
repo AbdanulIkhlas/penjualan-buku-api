@@ -9,4 +9,8 @@ trait BaseRepository[T] {
   def softDelete(id: Long): Future[Int]
   def findAll(): Future[Seq[T]]
   def findById(id: Long): Future[Option[T]]
+
+  // Trait opsional
+//  def findByIdUser(id: Long): Future[Seq[T]] = Future.successful(None)
+  def findByIdUser(id: Long): Future[Seq[T]] = Future.successful(Seq.empty[T])
 }
