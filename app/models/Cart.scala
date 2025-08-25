@@ -22,7 +22,7 @@ import java.time.LocalDateTime
     */
 case class Cart(
     id: Option[Long],
-    userId: Long,
+    user_id: Long,
     price: BigDecimal,
     status: String, // 'active' or 'ordered'
     createdAt: Option[LocalDateTime],
@@ -40,8 +40,8 @@ object Cart {
       get[BigDecimal]("price") ~
       get[String]("status") ~
       get[Option[LocalDateTime]]("created_at") ~
-      get[Option[LocalDateTime]]("updated_at") map { case id ~ userId ~ price ~ status ~ createdAt ~ updatedAt =>
-        Cart(id, userId, price, status, createdAt, updatedAt)
+      get[Option[LocalDateTime]]("updated_at") map { case id ~ user_id ~ price ~ status ~ createdAt ~ updatedAt =>
+        Cart(id, user_id, price, status, createdAt, updatedAt)
       }
   }
 }
