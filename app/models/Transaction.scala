@@ -9,27 +9,27 @@ import java.time.LocalDateTime
   *
   * @param id
   *   ID unik transaksi.
-  * @param cartId
+  * @param cart_id
   *   ID keranjang yang terkait dengan transaksi ini.
-  * @param cartPrice
+  * @param cart_price
   *   Total harga keranjang saat transaksi dilakukan.
-  * @param deliveryServicePrice
+  * @param delivery_service_price
   *   Biaya layanan pengiriman.
-  * @param totalPrice
-  *   Total harga keseluruhan transaksi (cartPrice + deliveryServicePrice).
-  * @param createdAt
+  * @param total_price
+  *   Total harga keseluruhan transaksi (cart_price + delivery_service_price).
+  * @param created_at
   *   Waktu pembuatan transaksi.
-  * @param updatedAt
+  * @param updated_at
   *   Waktu terakhir transaksi diperbarui.
   */
 case class Transaction(
     id: Option[Long],
-    cartId: Long,
-    cartPrice: BigDecimal,
-    deliveryServicePrice: BigDecimal,
-    totalPrice: BigDecimal,
-    createdAt: Option[LocalDateTime],
-    updatedAt: Option[LocalDateTime]
+    cart_id: Long,
+    cart_price: BigDecimal,
+    delivery_service_price: BigDecimal,
+    total_price: BigDecimal,
+    created_at: Option[LocalDateTime],
+    updated_at: Option[LocalDateTime]
 )
 
 object Transaction {
@@ -45,8 +45,8 @@ object Transaction {
       get[BigDecimal]("total_price") ~
       get[Option[LocalDateTime]]("created_at") ~
       get[Option[LocalDateTime]]("updated_at") map {
-        case id ~ cartId ~ cartPrice ~ deliveryServicePrice ~ totalPrice ~ createdAt ~ updatedAt =>
-          Transaction(id, cartId, cartPrice, deliveryServicePrice, totalPrice, createdAt, updatedAt)
+        case id ~ cart_id ~ cart_price ~ delivery_service_price ~ total_price ~ created_at ~ updated_at =>
+          Transaction(id, cart_id, cart_price, delivery_service_price, total_price, created_at, updated_at)
       }
   }
 }
