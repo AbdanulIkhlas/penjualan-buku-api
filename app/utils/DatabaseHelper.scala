@@ -204,6 +204,7 @@ class DatabaseHelper @Inject() (db: Database)(implicit ec: ExecutionContext) {
       idValue: Any,
       parser: RowParser[T]
   ): Future[Option[T]] = withConnection { implicit connection =>
+    println(s"[DEBUG] SQL Query findByIdRow: nama table : $tableName, nama kolom : $idColumn, value colom : $idValue")
     val sql = SQL(s"SELECT * FROM $tableName WHERE $idColumn = {$idColumn}").on(idColumn -> idValue)
 
     sql.as(parser.singleOpt)
