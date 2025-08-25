@@ -8,24 +8,24 @@ import play.api.libs.json.{Json, OFormat}
     *
     * @param id
     *   ID unik relasi keranjang-buku.
-    * @param cartId
+    * @param cart_id
     *   ID keranjang yang terkait dengan relasi ini.
-    * @param bookId
+    * @param book_id
     *   ID buku yang terkait dengan relasi ini.
     * @param qty
     *   Jumlah buku dalam keranjang.
-    * @param unitPrice
+    * @param unit_price
     *   Harga satuan buku dalam keranjang.
-    * @param totalPrice
+    * @param total_price
     *   Total harga keseluruhan buku dalam keranjang.
     */
 case class CartBook(
     id: Option[Long],
-    cartId: Long,
-    bookId: Long,
+    cart_id: Long,
+    book_id: Long,
     qty: Int,
-    unitPrice: BigDecimal,
-    totalPrice: BigDecimal
+    unit_price: BigDecimal,
+    total_price: BigDecimal
 )
 
 object CartBook {
@@ -39,8 +39,8 @@ object CartBook {
       get[Long]("book_id") ~
       get[Int]("qty") ~
       get[BigDecimal]("unit_price") ~
-      get[BigDecimal]("total_price") map { case id ~ cartId ~ bookId ~ qty ~ unitPrice ~ totalPrice =>
-        CartBook(id, cartId, bookId, qty, unitPrice, totalPrice)
+      get[BigDecimal]("total_price") map { case id ~ cart_id ~ book_id ~ qty ~ unit_price ~ total_price =>
+        CartBook(id, cart_id, book_id, qty, unit_price, total_price)
       }
   }
 }
