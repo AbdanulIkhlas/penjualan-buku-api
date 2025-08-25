@@ -33,7 +33,7 @@ extends BaseRepository[Cart] {
   override def update(id: Long, cart: Cart): Future[Int] = {
     dbHelper.updateRowById(
       tableName = "cart",
-      data = Map(
+      data = ListMap(
         "user_id"       -> cart.user_id,
         "price"         -> cart.price,
         "status"        -> cart.status,
