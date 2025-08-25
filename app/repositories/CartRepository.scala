@@ -83,4 +83,13 @@ extends BaseRepository[Cart] {
       parser = Cart.parser
     )
   }
+
+  // tampilkan keranjang berdasarkan id user
+  override def findByIdUser(id: Long): Future[Seq[Cart]] = {
+    dbHelper.findAll[Cart](
+      table = "cart",
+      parser = Cart.parser,
+      condition = Some(s"user_id = $id")
+    )
+  }
 }

@@ -247,4 +247,21 @@ object ControllerHelper {
         ResponseHelper.internalServerError(s"Gagal mengambil $entityName: ${e.getMessage}")
       }
   }
+
+  def findByIdUser[T](
+      idUser: Long,
+      repository: BaseRepository[T],
+      entityName: String
+  )(implicit writes: Writes[T], ec: ExecutionContext): Future[Result] = {
+    println(s"[DEBUG] findByIdUser request for $entityName with id User: $idUser")
+
+    repository
+      .findByIdUser(idUser) // return Future[Seq[T]]
+      .map { entities =>
+        ResponseHelper.success(entities, s"Daftar $entityName dengan ID User $idUser berhasil diambil.")
+      }
+      .recover { case e: Exception =>
+        ResponseHelper.internalServerError(s"Gagal mengambil daftar $entityName: ${e.getMessage}")
+      }
+  }
 }
