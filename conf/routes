@@ -42,3 +42,11 @@ DELETE  /cart/permanent/:id        controllers.CartController.deleteCart(id: Lon
 GET     /cart                      controllers.CartController.getAllCarts
 GET     /cart/:id                  controllers.CartController.getCartById(id: Long)
 GET     /cart/id-user/:id          controllers.CartController.getCartByIdUser(id: Long)
+
+# CartBooks
+POST    /cartBook                      controllers.CartBookController.createCartBook
+PUT     /cartBook/:id                  controllers.CartBookController.updateCartBook(id: Long)
+DELETE  /cartBook/:id                  controllers.CartBookController.softDeleteCartBook(id: Long)
+DELETE  /cartBook/permanent/:id        controllers.CartBookController.deleteCartBook(id: Long)
+GET     /cartBook                      controllers.CartBookController.getAllCartBooks
+GET     /cartBook/:id                  controllers.CartBookController.getCartBookById(id: Long)
