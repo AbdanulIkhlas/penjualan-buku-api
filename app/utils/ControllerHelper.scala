@@ -31,6 +31,7 @@ object ControllerHelper {
       repository: BaseRepository[T],
       entityName: String
   )(implicit reads: Reads[T], writes: Writes[T], ec: ExecutionContext): Future[Result] = {
+    println("[MARK] Masuk function addData controller helper")
     println("[DEBUG] request body: " + request.body)
     request.body
       .validate[T]
@@ -80,9 +81,9 @@ object ControllerHelper {
       repository: BaseRepository[T],
       entityName: String
   )(implicit reads: Reads[T], writes: Writes[T], ec: ExecutionContext): Future[Result] = {
+    println("[MARK] Masuk function updateData controller helper")
     println(s"[DEBUG] request body update $entityName: " + request.body)
     println(s"[DEBUG] dipanggil dari: $entityName")
-    println(s"[DEBUG] implicit reads digunakan: ${implicitly[Reads[T]]}")
 
     request.body
       .validate[T]
@@ -129,6 +130,7 @@ object ControllerHelper {
       repository: BaseRepository[T],
       entityName: String
   )(implicit ec: ExecutionContext): Future[Result] = {
+    println("[MARK] Masuk function deleteData controller helper")
     println(s"[DEBUG] delete request for $entityName with id=$id")
 
     repository
@@ -164,6 +166,7 @@ object ControllerHelper {
       repository: BaseRepository[T],
       entityName: String
   )(implicit ec: ExecutionContext): Future[Result] = {
+    println("[MARK] Masuk function softDeleteData controller helper")
     println(s"[DEBUG] soft delete request for $entityName with id=$id")
 
     repository
@@ -199,6 +202,7 @@ object ControllerHelper {
       repository: BaseRepository[T],
       entityName: String
   )(implicit writes: Writes[T], ec: ExecutionContext): Future[Result] = {
+    println("[MARK] Masuk function findAllData controller helper")
     println(s"[DEBUG] findAll request for $entityName")
 
     repository
@@ -233,6 +237,7 @@ object ControllerHelper {
       repository: BaseRepository[T],
       entityName: String
   )(implicit writes: Writes[T], ec: ExecutionContext): Future[Result] = {
+    println("[MARK] Masuk function findByIdData controller helper")
     println(s"[DEBUG] findById request for $entityName with id: $id")
 
     repository
@@ -253,6 +258,7 @@ object ControllerHelper {
       repository: BaseRepository[T],
       entityName: String
   )(implicit writes: Writes[T], ec: ExecutionContext): Future[Result] = {
+    println("[MARK] Masuk function findByIdUser controller helper")
     println(s"[DEBUG] findByIdUser request for $entityName with id User: $idUser")
 
     repository

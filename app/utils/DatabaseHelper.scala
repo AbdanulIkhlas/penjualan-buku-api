@@ -57,6 +57,7 @@ class DatabaseHelper @Inject() (db: Database)(implicit ec: ExecutionContext) {
       tableName: String,
       data: Map[String, Any]
   ): Future[Long] = withTransaction { implicit connection =>
+    println("[MARK] Masuk function insertAndReturnId db helper")
     val columnNames: String     = data.keys.mkString(", ")
     val keyValueColumns: String = data.keys.map(key => s"{$key}").mkString(", ")
 
@@ -98,6 +99,7 @@ class DatabaseHelper @Inject() (db: Database)(implicit ec: ExecutionContext) {
       idValue: Any,
       softDeleteColumnName: String
   ): Future[Int] = withTransaction { implicit connection =>
+    println("[MARK] Masuk function updateRowById db helper")
     val setColumn: String = data.keys.map(col => s"$col = {$col}").mkString(", ")
 
     // Mapping kolom SET menjadi NamedParameter → {columnName -> columnValue}
@@ -133,6 +135,7 @@ class DatabaseHelper @Inject() (db: Database)(implicit ec: ExecutionContext) {
       idValue: Any,                // nilai id
       softDeleteColumnName: String // nama kolom soft delete
   ): Future[Int] = withTransaction { implicit connection =>
+    println("[MARK] Masuk function softDeleteRowById db helper")
     // NOTE : // kan where $idColumn = {idValue}, nah di on nya jg harus sama, karena {idValue} maka on nya "idValue" -> idValue(nilai dari id di parameter)
     val sql =
       SQL(
@@ -157,6 +160,7 @@ class DatabaseHelper @Inject() (db: Database)(implicit ec: ExecutionContext) {
       idColumn: String,
       idValue: Any
   ): Future[Int] = withConnection { implicit connection =>
+    println("[MARK] Masuk function deletePermanentRowById db helper")
     val sql = SQL(s"DELETE FROM $tableName WHERE $idColumn = {idValue}").on("idValue" -> idValue)
     sql.executeUpdate()
   }
@@ -175,6 +179,7 @@ class DatabaseHelper @Inject() (db: Database)(implicit ec: ExecutionContext) {
     *   Future yang berisi daftar objek.
     */
   def findAll[T](table: String, parser: RowParser[T], condition: Option[String] = None): Future[Seq[T]] = {
+    println("[MARK] Masuk function findAll db helper")
     val customConditionWhere = condition.map(c => s"WHERE $c").getOrElse("")
     val query                = SQL(s"SELECT * FROM $table $customConditionWhere")
     println(s"[DEBUG] SQL Query findAll: $query")
@@ -204,6 +209,7 @@ class DatabaseHelper @Inject() (db: Database)(implicit ec: ExecutionContext) {
       idValue: Any,
       parser: RowParser[T]
   ): Future[Option[T]] = withConnection { implicit connection =>
+    println("[MARK] Masuk function findByIdRow db helper")
     println(s"[DEBUG] SQL Query findByIdRow: nama table : $tableName, nama kolom : $idColumn, value colom : $idValue")
     val sql = SQL(s"SELECT * FROM $tableName WHERE $idColumn = {$idColumn}").on(idColumn -> idValue)
 
