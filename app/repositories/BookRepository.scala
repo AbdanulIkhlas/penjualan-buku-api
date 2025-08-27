@@ -11,27 +11,31 @@ import scala.collection.immutable.ListMap
 @Singleton
 class BookRepository @Inject() (db: Database, dbHelper: DatabaseHelper)(implicit ec: ExecutionContext)
     extends BaseRepository[Book] {
+  val genreRepository = new GenreRepository(db, dbHelper)
 
   // Tambah buku baru
   override def create(book: Book): Future[Book] = {
-    val data = ListMap(
-      "title"       -> book.title,
-      "author"      -> book.author,
-      "genre_id"    -> book.genre_id,
-      "description" -> book.description.getOrElse(""),
-      "price"       -> book.price,
-      "image_url"   -> book.image_url.getOrElse(""),
-      "stock"       -> book.stock
-    )
+    genreRepository.findById(book.genre_id).flatMap {
+      case Some(genre) => // jika Genre ada maka lanjut insert buku
+        val data = ListMap(
+          "title"       -> book.title,
+          "author"      -> book.author,
+          "genre_id"    -> book.genre_id,
+          "description" -> book.description.getOrElse(""),
+          "price"       -> book.price,
+          "image_url"   -> book.image_url.getOrElse(""),
+          "stock"       -> book.stock
+        )
 
-    println("{DEBUGGING} type price : " + book.price.getClass)
-    println("{DEBUGGING} price value : " + book.price)
-    println("{DEBUGGING} title value : " + book.title)
+        dbHelper.insertAndReturnId("books", data).map { id =>
+          book.copy(id = Some(id))
+        }
 
-    dbHelper.insertAndReturnId("books", data).map { id =>
-      book.copy(id = Some(id))
+      case None => // Genre tidak ada, return error
+        Future.failed(new Exception(s"Genre dengan id ${book.genre_id} tidak ditemukan"))
     }
   }
+
 
   // Update buku
   override def update(id: Long, book: Book): Future[Int] = {
