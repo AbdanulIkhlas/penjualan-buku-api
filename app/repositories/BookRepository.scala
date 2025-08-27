@@ -90,4 +90,53 @@ class BookRepository @Inject() (db: Database, dbHelper: DatabaseHelper)(implicit
     )
   }
 
+  /** Mengecek apakah stok buku cukup untuk quantity tertentu
+   *
+   * @param bookId ID buku
+   * @param qty Jumlah yang ingin dibeli / ditambahkan ke keranjang
+   * @return Future[Boolean] true jika stok cukup, false jika stok tidak cukup
+   */
+  def isStockAvailable(bookId: Long, qty: Int): Future[Boolean] = {
+    dbHelper.findByIdRow[Book]("books", "id", bookId, Book.parser).map {
+      case Some(book) => book.stock >= qty
+      case None       => false
+    }
+  }
+
+  /** Mengurangi stok buku berdasarkan bookId dan qty yang dibeli
+   *
+   * @param bookId ID buku
+   * @param qty Jumlah yang ingin dibeli / ditambahkan ke keranjang
+   * @return Future[Int] jumlah stok yang tersisa
+   */
+  def updateStock(bookId: Long, qty: Int, mode: String): Future[Int] = {
+    // Ambil stok saat ini dulu
+    var newStock = 0
+    findById(bookId).flatMap {
+      case Some(book) =>
+        if (mode == "mines") {
+          newStock = book.stock - qty
+        }else if (mode == "plus") {
+          newStock = book.stock + qty
+        }else if (mode == "same") {
+          newStock = book.stock
+        }
+
+        if (newStock < 0) {
+          Future.failed(new Exception("Stok buku tidak cukup untuk update"))
+        } else {
+          dbHelper.updateRowById(
+            tableName = "books",
+            data = ListMap("stock" -> newStock),
+            idColumn = "id",
+            idValue = bookId,
+            softDeleteColumnName = "is_delete_books"
+          )
+        }
+      case None =>
+        Future.failed(new Exception(s"Buku dengan id $bookId tidak ditemukan"))
+    }
+  }
+
+
 }
