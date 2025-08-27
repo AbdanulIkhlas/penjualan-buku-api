@@ -47,20 +47,6 @@ class CartBookRepository @Inject() (db: Database, dbHelper: DatabaseHelper)(impl
   }
 
 
-  //  override def create(cartBook: CartBook): Future[CartBook] = {
-//    val data = ListMap(
-//      "cart_id"     -> cartBook.cart_id,
-//      "book_id"     -> cartBook.book_id,
-//      "qty"         -> cartBook.qty,
-//      "unit_price"  -> cartBook.unit_price,
-//      "total_price" -> cartBook.total_price
-//    )
-//
-//    dbHelper.insertAndReturnId("cart_books", data).map { id =>
-//      cartBook.copy(id = Some(id))
-//    }
-//  }
-
   // update cart book
   override def update(id: Long, cartBook: CartBook): Future[Int] = {
     // Ambil data lama
