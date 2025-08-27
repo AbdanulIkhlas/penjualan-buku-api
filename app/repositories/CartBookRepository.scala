@@ -34,7 +34,7 @@ class CartBookRepository @Inject() (db: Database, dbHelper: DatabaseHelper)(impl
           // Insert ke cart_books
           dbHelper.insertAndReturnId("cart_books", data).flatMap { id =>
             // Update stok buku
-            bookRepository.updateStock(cartBook.book_id, cartBook.qty, "mines").map { _ =>
+            bookRepository.updateStock(cartBook.book_id, cartBook.qty, "mines").map { rowUpdated =>
               cartBook.copy(id = Some(id))
             }
           }
