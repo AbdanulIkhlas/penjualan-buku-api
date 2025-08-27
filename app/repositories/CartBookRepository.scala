@@ -187,4 +187,13 @@ class CartBookRepository @Inject() (db: Database, dbHelper: DatabaseHelper)(impl
       parser = CartBook.parser
     )
   }
+
+  // tampilkan keranjang berdasarkan id user
+  override def findCartBookByIdCart(id: Long): Future[Seq[CartBook]] = {
+    dbHelper.findAll[CartBook](
+      table = "cart_books",
+      parser = CartBook.parser,
+      condition = Some(s"cart_id = $id")
+    )
+  }
 }

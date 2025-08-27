@@ -53,4 +53,9 @@ extends AbstractController(cc) {
   def getCartBookById(id: Long): Action[AnyContent] = Action.async {
     ControllerHelper.findByIdData(id = id, repository = cartBookRepository, entityName = "Keranjang Buku")
   }
+
+  // Mendapatkan cart berdasarkan ID User. Endpoint: GET /cartBook/id-cart/:id
+  def getCartBookByIdCart(id: Long): Action[AnyContent] = Action.async {
+    ControllerHelper.findCartBookByIdCart(idCart = id, repository = cartBookRepository, entityName = "Keranjang")
+  }
 }

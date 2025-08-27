@@ -50,6 +50,7 @@ DELETE  /cartBook/:id                  controllers.CartBookController.softDelete
 DELETE  /cartBook/permanent/:id        controllers.CartBookController.deleteCartBook(id: Long)
 GET     /cartBook                      controllers.CartBookController.getAllCartBooks
 GET     /cartBook/:id                  controllers.CartBookController.getCartBookById(id: Long)
+GET     /cartBook/id-cart/:id          controllers.CartBookController.getCartBookByIdCart(id: Long)
 
 # Transaction
 POST    /transaction                      controllers.TransactionController.createTransaction

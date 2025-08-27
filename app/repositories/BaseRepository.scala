@@ -13,4 +13,5 @@ trait BaseRepository[T] {
   // Trait opsional
 //  def findByIdUser(id: Long): Future[Seq[T]] = Future.successful(None)
   def findByIdUser(id: Long): Future[Seq[T]] = Future.successful(Seq.empty[T])
+  def findCartBookByIdCart(id: Long): Future[Seq[T]] = Future.successful(Seq.empty[T])
 }

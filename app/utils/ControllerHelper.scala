@@ -270,4 +270,22 @@ object ControllerHelper {
         ResponseHelper.internalServerError(s"Gagal mengambil daftar $entityName: ${e.getMessage}")
       }
   }
+
+  def findCartBookByIdCart[T](
+      idCart: Long,
+      repository: BaseRepository[T],
+      entityName: String
+  )(implicit writes: Writes[T], ec: ExecutionContext): Future[Result] = {
+    println("[MARK] Masuk function findCartBookByIdCart controller helper")
+    println(s"[DEBUG] findCartBookByIdCart request for $entityName with idCart: $idCart")
+
+    repository
+      .findCartBookByIdCart(idCart) // return Future[Seq[T]]
+      .map { entities =>
+        ResponseHelper.success(entities, s"Daftar $entityName dengan ID Keranjang $idCart berhasil diambil.")
+      }
+      .recover { case e: Exception =>
+        ResponseHelper.internalServerError(s"Gagal mengambil daftar $entityName: ${e.getMessage}")
+      }
+  }
 }
