@@ -12,22 +12,44 @@ import java.time.LocalDateTime
 @Singleton
 class TransactionRepository @Inject() (db: Database, dbHelper: DatabaseHelper)(implicit ec: ExecutionContext)
     extends BaseRepository[Transaction] {
+  val cartRepository = new CartRepository(db, dbHelper)
 
   // buat transaksi
   override def create(transaction: Transaction): Future[Transaction] = {
-    val data = ListMap(
-      "cart_id"                -> transaction.cart_id,
-      "cart_price"             -> transaction.cart_price,
-      "delivery_service_price" -> transaction.delivery_service_price,
-      "total_price"            -> transaction.total_price,
-      "created_at"             -> LocalDateTime.now(),
-      "updated_at"             -> LocalDateTime.now()
-    )
+    // Ambil data cart
+    cartRepository.findById(transaction.cart_id).flatMap {
+      case Some(cart) =>
+        val cartPrice = cart.price
+        val deliveryServicePrice = cartPrice * 0.1
+        val totalPrice = cartPrice + deliveryServicePrice
 
-    dbHelper.insertAndReturnId("transactions", data).map { id =>
-      transaction.copy(id = Some(id))
+        val data = ListMap(
+          "cart_id"                -> cart.id.get,
+          "cart_price"             -> cartPrice,
+          "delivery_service_price" -> deliveryServicePrice,
+          "total_price"            -> totalPrice,
+          "created_at"             -> LocalDateTime.now(),
+          "updated_at"             -> LocalDateTime.now()
+        )
+
+        dbHelper.insertAndReturnId("transactions", data).flatMap { id =>
+          // Update status cart menjadi "ordered"
+          val updatedCart = cart.copy(status = "ordered", updatedAt = Some(LocalDateTime.now()))
+          cartRepository.update(cart.id.get, updatedCart).map(_ =>
+            transaction.copy(
+              id = Some(id),
+              cart_price = cartPrice,
+              delivery_service_price = deliveryServicePrice,
+              total_price = totalPrice
+            )
+          )
+        }
+
+      case None =>
+        Future.failed(new Exception(s"Cart dengan id ${transaction.cart_id} tidak ditemukan"))
     }
   }
+
 
   // update transaksi
   override def update(id: Long, transaction: Transaction): Future[Int] = {
