@@ -1,0 +1,51 @@
+@import views.html.main
+@(transaction: models.Transaction, cartBooks: Seq[(models.Book, Int)])
+
+@main("Detail Transaksi") {
+    <div class="bg-gray-50 min-h-screen">
+        <header class="bg-blue-600 text-white p-4 shadow">
+            <h1 class="text-2xl font-bold">📦 Detail Transaksi</h1>
+        </header>
+
+        <main class="p-6 max-w-4xl mx-auto">
+            <div class="bg-white shadow rounded-lg p-6 mb-6">
+                <h2 class="text-xl font-semibold mb-4">Informasi Transaksi</h2>
+                <p><b>ID Transaksi:</b> @transaction.id.getOrElse(0)</p>
+                <p><b>Tanggal:</b> @transaction.created_at.getOrElse("")</p>
+                <p><b>Subtotal:</b> Rp @transaction.cart_price</p>
+                <p><b>Ongkir:</b> Rp @transaction.delivery_service_price</p>
+                <p><b>Total:</b> <span class="text-green-600 font-bold">Rp @transaction.total_price</span></p>
+            </div>
+
+            <div class="bg-white shadow rounded-lg p-6">
+                <h2 class="text-xl font-semibold mb-4">📚 Daftar Buku</h2>
+                <table class="w-full text-left border-collapse">
+                    <thead>
+                        <tr class="border-b">
+                            <th class="p-2">Judul</th>
+                            <th class="p-2">Penulis</th>
+                            <th class="p-2">Jumlah</th>
+                            <th class="p-2">Harga</th>
+                            <th class="p-2">Total</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    @for((book, qty) <- cartBooks) {
+                        <tr class="border-b hover:bg-gray-50">
+                            <td class="p-2">@book.title</td>
+                            <td class="p-2">@book.author</td>
+                            <td class="p-2">@qty</td>
+                            <td class="p-2">Rp @book.price</td>
+                            <td class="p-2 font-semibold">Rp @{book.price * qty}</td>
+                        </tr>
+                    }
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="mt-6">
+                <a href="/" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">Kembali ke Toko</a>
+            </div>
+        </main>
+    </div>
+}

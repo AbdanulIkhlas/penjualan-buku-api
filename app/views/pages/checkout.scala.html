@@ -1,0 +1,89 @@
+@import views.html.main
+
+@(cartId: Long, cartPrice: BigDecimal, userId: Long, userName: String)
+
+@main("Checkout") {
+    <div class="min-h-screen flex items-center justify-center bg-gray-100 p-6">
+        <div class="bg-white p-8 rounded-lg shadow max-w-lg w-full">
+            <h2 class="text-xl font-bold mb-4 text-center">Ringkasan Checkout</h2>
+            <p class="mb-2">Halo, <b>@userName</b></p>
+
+            <div id="checkout-list" class="border-t border-b py-4 mb-4"></div>
+
+            <div class="space-y-2 text-gray-700">
+                <div class="flex justify-between">
+                    <span>Total Barang:</span><span id="cart-price">Rp @cartPrice</span>
+                </div>
+                <div class="flex justify-between">
+                    <span>Biaya Layanan (10%):</span><span id="delivery-price">Rp @(cartPrice * 0.1)</span>
+                </div>
+                <div class="flex justify-between font-bold border-t pt-2 text-green-600 text-lg">
+                    <span>Total Keseluruhan:</span><span id="total-price">Rp @(cartPrice + (cartPrice * 0.1))</span>
+                </div>
+            </div>
+
+            <button onclick="confirmTransaction()"
+            class="w-full mt-6 bg-green-600 text-white py-2 rounded hover:bg-green-700">
+                Konfirmasi Pembelian
+            </button>
+            <p id="message" class="mt-4 text-center text-sm"></p>
+        </div>
+    </div>
+}
+
+<script>
+        const baseUrl = window.location.origin;
+        const params = new URLSearchParams(window.location.search);
+        const cartId = params.get("cartId");
+        const cartPrice = parseFloat(params.get("cartPrice"));
+        const userId = params.get("userId");
+
+        const numberFormat = new Intl.NumberFormat("id-ID", { style: "currency", currency: "IDR" });
+
+        async function loadCheckoutBooks() {
+            const listEl = document.getElementById("checkout-list");
+            try {
+                const res = await fetch(`${baseUrl}/cartBook/id-cart/${cartId}`);
+                const data = await res.json();
+                const items = data.data;
+                listEl.innerHTML = "";
+                items.forEach(item => {
+                    listEl.innerHTML += `
+          <div class="flex justify-between py-1">
+            <span>${item.book_id} (x${item.qty})</span>
+            <span>${numberFormat.format(item.total_price)}</span>
+          </div>
+        `;
+                });
+            } catch (err) {
+                console.error("Checkout error:", err);
+            }
+        }
+
+        async function confirmTransaction() {
+            const messageEl = document.getElementById("message");
+            try {
+                const res = await fetch(`${baseUrl}/transaction`, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ cart_id: cartId, cart_price: cartPrice })
+                });
+                const data = await res.json();
+                if (data.status === "success") {
+                    messageEl.textContent = "✅ Transaksi berhasil!";
+                    messageEl.className = "mt-4 text-sm text-green-600";
+                    setTimeout(() => {
+                        window.location.href = `/transaction/${userId}`;
+                    }, 2000);
+                } else {
+                    messageEl.textContent = "❌ Gagal transaksi: " + data.message;
+                    messageEl.className = "mt-4 text-sm text-red-500";
+                }
+            } catch (err) {
+                messageEl.textContent = "⚠️ Error saat transaksi.";
+                messageEl.className = "mt-4 text-sm text-red-500";
+            }
+        }
+
+        document.addEventListener("DOMContentLoaded", loadCheckoutBooks);
+</script>

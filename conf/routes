@@ -59,3 +59,7 @@ DELETE  /transaction/:id                  controllers.TransactionController.soft
 DELETE  /transaction/permanent/:id        controllers.TransactionController.deleteTransaction(id: Long)
 GET     /transaction                      controllers.TransactionController.getAllTransactions
 GET     /transaction/:id                  controllers.TransactionController.getTransactionById(id: Long)
+
+# Pages
+# Product page
+GET     /products                         controllers.ProductController.products(id: Long, name: String)

@@ -1,0 +1,53 @@
+@*
+Halaman Login
+Form input hanya email.
+Mengecek ke API /users dan redirect ke halaman produk jika email cocok.
+*@
+<div class="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-500 to-indigo-600 p-4">
+    <div class="bg-white p-8 rounded-2xl shadow-lg w-full max-w-md text-center">
+        <h1 class="text-3xl font-bold mb-4 text-gray-800">📚 KLAZBooK STORE</h1>
+        <p class="text-gray-600 mb-6">Masukkan email Anda untuk melanjutkan</p>
+
+        <form onsubmit="handleLogin(event)">
+            <input type="email" id="email"
+            placeholder="contohatemail.com"
+            class="w-full p-3 mb-4 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            required>
+            <button type="submit"
+            class="w-full bg-blue-600 text-white font-bold p-3 rounded-md hover:bg-blue-700 transition">
+        Masuk
+            </button>
+        </form>
+
+        <p id="message" class="mt-4 text-sm"></p>
+    </div>
+</div>
+
+<script>
+  const baseUrl = window.location.origin;
+
+  async function handleLogin(event) {
+      event.preventDefault();
+      const email = document.getElementById("email").value.trim();
+      const messageEl = document.getElementById("message");
+      messageEl.textContent = "";
+
+      try {
+          const response = await fetch(`${baseUrl}/users`);
+          const data = await response.json();
+          const users = data.data;
+
+          const user = users.find(u => u.email === email);
+          if (user) {
+              window.location.href = `/products?id=${user.id}&name=${encodeURIComponent(user.name)}`;
+          } else {
+              messageEl.textContent = "Email tidak ditemukan.";
+              messageEl.className = "mt-4 text-sm text-red-500";
+          }
+      } catch (err) {
+          console.error("Login error:", err);
+          messageEl.textContent = "Terjadi kesalahan, coba lagi.";
+          messageEl.className = "mt-4 text-sm text-red-500";
+      }
+  }
+</script>
