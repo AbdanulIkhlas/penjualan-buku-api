@@ -6,12 +6,14 @@ import play.api.db.Database
 import scala.concurrent.{ExecutionContext, Future}
 import utils.DatabaseHelper
 import scala.collection.immutable.ListMap
+import java.time.LocalDateTime
 
 // repository untuk operasi database pada tabel CartBook
 @Singleton
 class CartBookRepository @Inject() (db: Database, dbHelper: DatabaseHelper)(implicit ec: ExecutionContext)
     extends BaseRepository[CartBook] {
   val bookRepository = new BookRepository(db, dbHelper)
+  val cartRepository = new CartRepository(db, dbHelper)
 
   // tambah cart book
   override def create(cartBook: CartBook): Future[CartBook] = {
@@ -34,8 +36,18 @@ class CartBookRepository @Inject() (db: Database, dbHelper: DatabaseHelper)(impl
           // Insert ke cart_books
           dbHelper.insertAndReturnId("cart_books", data).flatMap { id =>
             // Update stok buku
-            bookRepository.updateStock(cartBook.book_id, cartBook.qty, "mines").map { rowUpdated =>
-              cartBook.copy(id = Some(id))
+            bookRepository.updateStock(cartBook.book_id, cartBook.qty, "mines").flatMap { _ =>
+              // Ambil data cart lama
+              cartRepository.findById(cartBook.cart_id).flatMap {
+                case Some(cart) =>
+                  val newPrice = cart.price + totalPrice
+                  val updatedCart = cart.copy(price = newPrice, updatedAt = Some(LocalDateTime.now()))
+                  cartRepository.update(cart.id.get, updatedCart).map(id =>
+                    cartBook.copy(id = Some(id))
+                  )
+                case None =>
+                  Future.failed(new Exception(s"Cart dengan id ${cartBook.cart_id} tidak ditemukan"))
+              }
             }
           }
         } else {
