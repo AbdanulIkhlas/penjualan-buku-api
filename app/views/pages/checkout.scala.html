@@ -70,17 +70,17 @@
                 });
                 const data = await res.json();
                 if (data.status === "success") {
-                    messageEl.textContent = "✅ Transaksi berhasil!";
+                    messageEl.textContent = "Transaksi berhasil!";
                     messageEl.className = "mt-4 text-sm text-green-600";
                     setTimeout(() => {
                         window.location.href = `/transactionHistory/${userId}`;
                     }, 2000);
                 } else {
-                    messageEl.textContent = "❌ Gagal transaksi: " + data.message;
+                    messageEl.textContent = " Gagal transaksi: " + data.message;
                     messageEl.className = "mt-4 text-sm text-red-500";
                 }
             } catch (err) {
-                messageEl.textContent = "⚠️ Error saat transaksi.";
+                messageEl.textContent = "Error saat transaksi.";
                 messageEl.className = "mt-4 text-sm text-red-500";
             }
         }
