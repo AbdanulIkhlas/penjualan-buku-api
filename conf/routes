@@ -66,4 +66,6 @@ GET     /userTransaction/:idUser          controllers.UserTransactionController.
 # Pages
 # Product page
 GET     /products                         viewController.ProductController.products(id: Long, name: String)
-GET     /history/:idUser/:userName                          viewController.TransactionHistoryController.historyTransaction(idUser: Long, userName: String)
+GET     /history/:idUser/:userName        viewController.TransactionHistoryController.historyTransaction(idUser: Long, userName: String)
+GET     /add-book/:userId/:userName        viewController.AddBookController.showAddBookPage(userId: Long, userName: String)
+
