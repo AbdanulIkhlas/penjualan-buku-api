@@ -24,32 +24,32 @@ class TransactionController @Inject() (
 )(implicit ec: ExecutionContext)
     extends AbstractController(cc) {
 
-  // Menambahkan transaction baru. Endpoint: POST /transaction
+  // Menambahkan transactionHistory baru. Endpoint: POST /transactionHistory
   def createTransaction: Action[JsValue] = Action.async(parse.json) { request =>
     ControllerHelper.addData(request = request, repository = transactionRepository, entityName = "Transaksi")
   }
 
-  // Memperbarui transaction yang sudah ada. Endpoint: PUT /transaction/:id
+  // Memperbarui transactionHistory yang sudah ada. Endpoint: PUT /transactionHistory/:id
   def updateTransaction(id: Long): Action[JsValue] = Action.async(parse.json) { request =>
     ControllerHelper.updateData(id = id, request = request, repository = transactionRepository, entityName = "Transaksi")
   }
 
-  // Menghapus transaction secara permanen berdasarkan ID. Endpoint: DELETE /transaction/permanent/:id
+  // Menghapus transactionHistory secara permanen berdasarkan ID. Endpoint: DELETE /transactionHistory/permanent/:id
   def deleteTransaction(id: Long): Action[AnyContent] = Action.async {
     ControllerHelper.deleteData(id = id, repository = transactionRepository, entityName = "Transaksi")
   }
 
-  // Menghapus transaction temp berdasarkan ID. Endpoint: DELETE /transaction/:id
+  // Menghapus transactionHistory temp berdasarkan ID. Endpoint: DELETE /transactionHistory/:id
   def softDeleteTransaction(id: Long): Action[AnyContent] = Action.async {
     ControllerHelper.softDeleteData(id = id, repository = transactionRepository, entityName = "Transaksi")
   }
 
-  // Mendapatkan semua transaction. Endpoint: GET /transaction
+  // Mendapatkan semua transactionHistory. Endpoint: GET /transactionHistory
   def getAllTransactions: Action[AnyContent] = Action.async {
     ControllerHelper.findAllData(repository = transactionRepository, entityName = "Transaksi")
   }
 
-  // Mendapatkan transaction berdasarkan ID. Endpoint: GET /transaction/:id
+  // Mendapatkan transactionHistory berdasarkan ID. Endpoint: GET /transactionHistory/:id
   def getTransactionById(id: Long): Action[AnyContent] = Action.async {
     ControllerHelper.findByIdData(id = id, repository = transactionRepository, entityName = "Transaksi")
   }

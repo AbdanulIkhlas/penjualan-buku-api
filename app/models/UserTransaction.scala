@@ -1,0 +1,82 @@
+package models
+
+import anorm._
+import anorm.SqlParser._
+import play.api.libs.json.{Json, OFormat}
+
+// Detail buku dalam transaksi
+case class UserTransactionBook(
+    cartBookId: Long,
+    quantity: Int,
+    unitPrice: Double,
+    totalPrice: Double,
+    bookId: Long,
+    title: String,
+    author: String,
+    price: Double
+)
+
+object UserTransactionBook {
+  implicit val format: OFormat[UserTransactionBook] = Json.format[UserTransactionBook]
+
+  val parser: RowParser[UserTransactionBook] = {
+    get[Long]("cart_book_id") ~
+      get[Int]("quantity") ~
+      get[Double]("unit_price") ~
+      get[Double]("book_total_price") ~
+      get[Long]("book_id") ~
+      get[String]("title") ~
+      get[String]("author") ~
+      get[Double]("book_price") map {
+        case cartBookId ~ quantity ~ unitPrice ~ totalPrice ~ bookId ~ title ~ author ~ price =>
+          UserTransactionBook(cartBookId, quantity, unitPrice, totalPrice, bookId, title, author, price)
+      }
+  }
+}
+
+// Transaksi beserta daftar buku
+case class UserTransaction(
+    transactionId: Long,
+    cartId: Long,
+    cartPrice: Double,
+    deliveryFee: Double,
+    totalPrice: Double,
+    books: Seq[UserTransactionBook]
+)
+
+object UserTransaction {
+  implicit val format: OFormat[UserTransaction] = Json.format[UserTransaction]
+
+  val parser: RowParser[UserTransaction] = {
+    get[Long]("transaction_id") ~
+      get[Long]("cart_id") ~
+      get[Double]("cart_price") ~
+      get[Double]("delivery_service_price") ~
+      get[Double]("total_price") map { case transactionId ~ cartId ~ cartPrice ~ deliveryFee ~ totalPrice =>
+        UserTransaction(transactionId, cartId, cartPrice, deliveryFee, totalPrice, Seq.empty)
+      }
+  }
+
+  /** Parser gabungan transaksi + buku untuk repository */
+  val transactionWithBookParser: RowParser[(UserTransaction, UserTransactionBook)] = {
+    get[Long]("transaction_id") ~
+      get[Long]("cart_id") ~
+      get[Double]("cart_price") ~
+      get[Double]("delivery_service_price") ~
+      get[Double]("total_price") ~
+      get[Long]("cart_book_id") ~
+      get[Int]("quantity") ~
+      get[Double]("unit_price") ~
+      get[Double]("book_total_price") ~
+      get[Long]("book_id") ~
+      get[String]("title") ~
+      get[String]("author") ~
+      get[Double]("book_price") map {
+        case trxId ~ cartId ~ cartPrice ~ deliveryFee ~ totalPrice ~
+            cartBookId ~ quantity ~ unitPrice ~ bookTotal ~ bookId ~ title ~ author ~ price =>
+          val trx  = UserTransaction(trxId, cartId, cartPrice, deliveryFee, totalPrice, Seq.empty)
+          val book = UserTransactionBook(cartBookId, quantity, unitPrice, bookTotal, bookId, title, author, price)
+          (trx, book)
+      }
+  }
+}

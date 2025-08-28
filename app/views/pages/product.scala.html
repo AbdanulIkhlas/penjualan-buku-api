@@ -1,17 +1,11 @@
 @import views.html.main
+@import views.html.components.header
 
-@(userId: Long, userName: String)
+@(userId: Long, userName: String)(implicit request: RequestHeader)
 
 @main(s"Selamat datang, $userName!") {
     <div class="bg-gray-50 min-h-screen">
-        <header class="bg-blue-600 text-white p-4 flex justify-between items-center shadow">
-            <h1 class="text-2xl font-bold">📚 KLAZBooK STORE</h1>
-            <div class="flex items-center space-x-4">
-                <span>Halo, @userName 👋</span>
-                <a href="/transaction/@userId" class="hover:underline">Riwayat Transaksi</a>
-                <a href="/" class="hover:underline">Keluar</a>
-            </div>
-        </header>
+        @header(userName, userId)
 
         <main class="p-6 max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-3 gap-6">
                 <!-- Katalog Buku -->
@@ -20,10 +14,10 @@
                 <div id="books-container" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 gap-6"></div>
             </div>
 
-                <!-- Keranjang + Checkout -->
+            <!-- Keranjang + Checkout -->
             <div class="lg:col-span-1">
                 <div class="bg-white rounded-lg shadow p-6 border sticky top-6">
-                    <h3 class="text-lg font-bold mb-4">🛒 Keranjang Belanja</h3>
+                    <h3 class="text-lg font-bold mb-4">Keranjang Belanja</h3>
                     <div id="cart-list" class="space-y-2 max-h-60 overflow-y-auto"></div>
                     <p id="cart-empty" class="text-gray-500">Keranjang kosong.</p>
                     <div class="flex justify-between mt-4 border-t pt-2">
@@ -60,15 +54,18 @@
             <p class="font-semibold">Stok: <span id="modal-stock"></span></p>
 
             <div class="flex items-center justify-center mt-4 space-x-4">
-                <button onclick="changeQty(-1)" class="px-3 py-1 bg-gray-200 rounded">-</button>
+                <button type="button" onclick="changeQty(-1)" class="px-3 py-1 bg-gray-200 rounded">-</button>
                 <span id="qty-display" class="text-lg font-bold">1</span>
-                <button onclick="changeQty(1)" class="px-3 py-1 bg-gray-200 rounded">+</button>
+                <button type="button" onclick="changeQty(1)" class="px-3 py-1 bg-gray-200 rounded">+</button>
             </div>
 
-            <div class="mt-6 flex justify-between">
-                <button onclick="closeModal()" class="px-4 py-2 bg-gray-400 text-white rounded">Tutup</button>
-                <button onclick="addToCart()" class="px-4 py-2 bg-green-600 text-white rounded">Tambah ke Keranjang</button>
-            </div>
+            <button type="button" id="btn-add-cart" class="mt-6 w-full px-4 py-2 bg-green-600 text-white rounded">
+                Tambah ke Keranjang
+            </button>
+
+            <button type="button" onclick="closeModal()" class="mt-4 px-4 py-2 bg-gray-400 text-white rounded w-full">
+                Tutup
+            </button>
         </div>
     </div>
 }
@@ -76,27 +73,23 @@
 <script>
         const baseUrl = window.location.origin;
         const userId = @userId;
-        const userName = "@userName";
-
         let allBooks = [];
         let currentBook = null;
         let currentQty = 1;
         let activeCart = null;
         let cartBooks = [];
-
-        const deliveryPrice = 10000; // Ongkir flat Rp 10.000
+        const deliveryPrice = 10000;
         const numberFormat = new Intl.NumberFormat("id-ID", { style: "currency", currency: "IDR" });
 
-        // Ambil daftar buku
+        // Ambil CSRF token Play Framework
+        const csrfToken = '@helper.CSRF.getToken.value';
+
+        // Load buku
         async function loadBooks() {
-            try {
-                const res = await fetch(`${baseUrl}/books`);
-                const data = await res.json();
-                allBooks = data.data;
-                renderBooks(allBooks);
-            } catch (err) {
-                console.error("Gagal load buku:", err);
-            }
+            const res = await fetch(`${baseUrl}/books`);
+            const data = await res.json();
+            allBooks = data.data;
+            renderBooks(allBooks);
         }
 
         function renderBooks(books) {
@@ -104,86 +97,159 @@
             container.innerHTML = "";
             books.forEach(book => {
                 container.innerHTML += `
-        <div class="bg-white rounded shadow p-4 hover:scale-105 transition cursor-pointer"
-             onclick="showBookDetail(${book.id})">
-          <img src="@routes.Assets.versioned("images/dummy.png")"
-               class="w-full h-40 object-cover rounded mb-2">
-          <h4 class="font-bold">${book.title}</h4>
-          <p class="text-sm text-gray-600">${book.author}</p>
-          <p class="font-semibold text-green-600">${numberFormat.format(book.price)}</p>
-        </div>
-      `;
+                <div class="bg-white rounded shadow p-4 hover:scale-105 transition cursor-pointer"
+                     onclick="showBookDetail(${book.id})">
+                  <img src="@routes.Assets.versioned("images/dummy.png")"
+                       class="w-full h-40 object-cover rounded mb-2">
+                  <h4 class="font-bold">${book.title}</h4>
+                  <p class="text-sm text-gray-600">${book.author}</p>
+                  <p class="font-semibold text-green-600">${numberFormat.format(book.price)}</p>
+                </div>
+            `;
             });
         }
 
-        // Modal detail buku
-        function showBookDetail(id) {
-            currentBook = allBooks.find(b => b.id === id);
+        // Ambil data buku terbaru dari backend
+        async function refreshBook(bookId) {
+            const res = await fetch(`${baseUrl}/books/${bookId}`);
+            const data = await res.json();
+            return data.data;
+        }
+
+        // get genre buku
+        async function getGenre(id) {
+            console.log("id genre : ", id);
+            const res = await fetch(`${baseUrl}/genres/${id}`);
+            const data = await res.json();
+            console.log("genre : ", data.data);
+            return data.data.name;
+        }
+
+        // Modal buku
+        async function showBookDetail(id) {
+            // Ambil data terbaru buku dari backend
+            currentBook = await refreshBook(id);
+            console.log("currentBook : ", currentBook);
+            genresBook = await getGenre(currentBook.genre_id);
             if (!currentBook) return;
+            currentQty = 1;
+
             document.getElementById("modal-title").textContent = currentBook.title;
             document.getElementById("modal-author").textContent = `Penulis: ${currentBook.author}`;
-            document.getElementById("modal-genre").textContent = `Genre ID: ${currentBook.genre_id}`;
+            document.getElementById("modal-genre").textContent = `Genre : ${genresBook}`;
             document.getElementById("modal-description").textContent = currentBook.description || "Tidak ada deskripsi.";
             document.getElementById("modal-price").textContent = numberFormat.format(currentBook.price);
+
+            // stok dinamis
             document.getElementById("modal-stock").textContent = currentBook.stock;
-            document.getElementById("qty-display").textContent = "1";
-            currentQty = 1;
+
+            document.getElementById("qty-display").textContent = currentQty;
             document.getElementById("book-modal").classList.remove("hidden");
         }
+
 
         function closeModal() {
             document.getElementById("book-modal").classList.add("hidden");
         }
 
         function changeQty(delta) {
+            if (!currentBook) return;
             currentQty += delta;
             if (currentQty < 1) currentQty = 1;
             if (currentQty > currentBook.stock) currentQty = currentBook.stock;
             document.getElementById("qty-display").textContent = currentQty;
         }
 
-        // Ambil/ buat cart
+        // Ambil / buat cart
         async function getOrCreateCart() {
             if (activeCart) return activeCart;
+
+            // Ambil semua cart user
             const res = await fetch(`${baseUrl}/cart/id-user/${userId}`);
             const data = await res.json();
-            if (data.data.length > 0) {
-                activeCart = data.data.find(c => c.status === "active");
-            }
+
+            // Cari cart dengan status active
+            activeCart = data.data.find(c => c.status === "active");
+
+            // Kalau tidak ada, buat cart baru dengan status active
             if (!activeCart) {
                 const createRes = await fetch(`${baseUrl}/cart`, {
                     method: "POST",
-                    headers: { "Content-Type": "application/json" },
+                    headers: {
+                        "Content-Type": "application/json",
+                        "Csrf-Token": csrfToken
+                    },
+                    credentials: "same-origin",
                     body: JSON.stringify({ user_id: userId, price: 0, status: "active" })
                 });
                 const createData = await createRes.json();
                 activeCart = createData.data;
             }
+
             return activeCart;
         }
 
+
+        // Tambah ke keranjang (AJAX)
         async function addToCart() {
             if (!currentBook) return;
             const cart = await getOrCreateCart();
+
             await fetch(`${baseUrl}/cartBook`, {
                 method: "POST",
-                headers: { "Content-Type": "application/json" },
+                headers: {
+                    "Content-Type": "application/json",
+                    "Csrf-Token": csrfToken
+                },
+                credentials: "same-origin",
                 body: JSON.stringify({
                     cart_id: cart.id,
                     book_id: currentBook.id,
                     qty: currentQty,
                     unit_price: currentBook.price,
-                    total_price: currentBook.price * currentQty
+                    total_price: currentBook.price * currentQty,
+                    is_delete_cart_books: false
                 })
             });
+
             await loadCartBooks();
             closeModal();
         }
 
+        // Hapus item dari keranjang (soft delete) dan reload stok buku
+        async function deleteCartBook(cartBookId) {
+            if (!confirm("Hapus item ini dari keranjang?")) return;
+
+            const res = await fetch(`${baseUrl}/cartBook/${cartBookId}`, {
+                method: "DELETE",
+                headers: {
+                    "Csrf-Token": csrfToken
+                },
+                credentials: "same-origin"
+            });
+
+            const data = await res.json();
+
+            // Reload cartBooks
+            await loadCartBooks();
+
+            // Update stok di modal jika modal buku yang dihapus sama dengan currentBook
+            if (currentBook) {
+                // Ambil data terbaru buku dari allBooks
+                const updatedBook = allBooks.find(b => b.id === currentBook.id);
+                if (updatedBook) {
+                    document.getElementById("modal-stock").textContent = updatedBook.stock;
+                }
+            }
+        }
+
+
+        // Load keranjang
         async function loadCartBooks() {
             const cart = await getOrCreateCart();
             const res = await fetch(`${baseUrl}/cartBook/id-cart/${cart.id}`);
             const data = await res.json();
+            console.log("data cartbook: ", data);
             cartBooks = data.data;
             renderCart();
         }
@@ -192,44 +258,67 @@
             const listEl = document.getElementById("cart-list");
             const emptyEl = document.getElementById("cart-empty");
             const totalEl = document.getElementById("total-price");
+            const deliveryEl = document.getElementById("delivery-price");
             const grandTotalEl = document.getElementById("grand-total");
 
             listEl.innerHTML = "";
             let subtotal = 0;
-            if (cartBooks.length === 0) {
+
+            const activeCartBooks = cartBooks.filter(item => !item.is_delete_cart_books);
+
+            if (activeCartBooks.length === 0) {
                 emptyEl.style.display = "block";
             } else {
                 emptyEl.style.display = "none";
-                cartBooks.forEach(item => {
+                activeCartBooks.forEach(item => {
                     const book = allBooks.find(b => b.id === item.book_id);
                     if (book) {
                         subtotal += item.total_price;
                         listEl.innerHTML += `
-            <div class="flex justify-between text-sm border-b py-1">
-              <span>${book.title} (x${item.qty})</span>
-              <span>${numberFormat.format(item.total_price)}</span>
-            </div>
-          `;
+                    <div class="flex justify-between text-sm border-b py-1 items-center">
+                        <span>${book.title} (x${item.qty})</span>
+                        <span class="flex items-center space-x-2">
+                            <span>${numberFormat.format(item.total_price)}</span>
+                            <button onclick="deleteCartBook(${item.id})"
+                                class="text-red-500 hover:text-red-700">
+                                🗑️
+                            </button>
+                        </span>
+                    </div>
+                `;
                     }
                 });
             }
+
             totalEl.textContent = numberFormat.format(subtotal);
-            grandTotalEl.textContent = numberFormat.format(subtotal + deliveryPrice);
+
+            // ongkir 10% dari subtotal
+            const deliveryPriceDynamic = subtotal * 0.10;
+            deliveryEl.textContent = numberFormat.format(deliveryPriceDynamic);
+
+            grandTotalEl.textContent = numberFormat.format(subtotal + deliveryPriceDynamic);
         }
 
-        // Checkout → buat transaksi langsung
+
+
+        // Checkout
         async function checkout() {
             const cart = await getOrCreateCart();
             if (!cart || cartBooks.length === 0) {
                 alert("Keranjang kosong!");
                 return;
             }
+
             let subtotal = cartBooks.reduce((sum, item) => sum + item.total_price, 0);
             let total = subtotal + deliveryPrice;
 
             const res = await fetch(`${baseUrl}/transaction`, {
                 method: "POST",
-                headers: { "Content-Type": "application/json" },
+                headers: {
+                    "Content-Type": "application/json",
+                    "Csrf-Token": csrfToken
+                },
+                credentials: "same-origin",
                 body: JSON.stringify({
                     cart_id: cart.id,
                     cart_price: subtotal,
@@ -237,13 +326,23 @@
                     total_price: total
                 })
             });
+
             const data = await res.json();
-            const trx = data.data;
-            window.location.href = `/transaction/${trx.id}`;
+            if(data.status === "success") {
+                // redirect ke riwayat transaksi user
+                window.location.href = `/history/${userId}/${encodeURIComponent('@userName')}`;
+            } else {
+                alert("Checkout gagal: " + data.message);
+            }
         }
+
+
+        // Event tombol modal
+        document.getElementById("btn-add-cart").addEventListener("click", addToCart);
 
         document.addEventListener("DOMContentLoaded", () => {
             loadBooks();
             loadCartBooks();
         });
 </script>
+

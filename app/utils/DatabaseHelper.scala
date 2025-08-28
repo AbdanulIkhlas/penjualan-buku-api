@@ -23,7 +23,7 @@ class DatabaseHelper @Inject() (db: Database)(implicit ec: ExecutionContext) {
     * @return
     *   Future yang berisi hasil dari blok kode.
     */
-  private def withConnection[T](block: java.sql.Connection => T): Future[T] = Future {
+  def withConnection[T](block: java.sql.Connection => T): Future[T] = Future {
     db.withConnection(block)
   }
 
@@ -36,7 +36,7 @@ class DatabaseHelper @Inject() (db: Database)(implicit ec: ExecutionContext) {
     * @return
     *   Future yang berisi hasil dari blok kode.
     */
-  private def withTransaction[T](block: java.sql.Connection => T): Future[T] = Future {
+  def withTransaction[T](block: java.sql.Connection => T): Future[T] = Future {
     db.withTransaction(block)
   }
 

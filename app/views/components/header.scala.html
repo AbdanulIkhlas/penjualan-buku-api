@@ -1,0 +1,10 @@
+@(userName: String, userId: Long)
+
+<header class="bg-blue-600 text-white p-4 flex justify-between items-center shadow">
+    <a href="/"><h1 class="text-2xl font-bold">KLAZBooK STORE</h1></a>
+    <div class="flex items-center space-x-4">
+        <span>Halo, @userName </span>
+        <a href="/history/@userId/@userName" class="hover:underline">Riwayat Transaksi</a>
+        <a href="/" class="hover:underline">Keluar</a>
+    </div>
+</header>

@@ -30,7 +30,8 @@ class CartBookRepository @Inject() (db: Database, dbHelper: DatabaseHelper)(impl
             "book_id"     -> cartBook.book_id,
             "qty"         -> cartBook.qty,
             "unit_price"  -> unitPrice,
-            "total_price" -> totalPrice
+            "total_price" -> totalPrice,
+            "is_delete_cart_books" -> false
           )
 
           // Insert ke cart_books
@@ -126,7 +127,8 @@ class CartBookRepository @Inject() (db: Database, dbHelper: DatabaseHelper)(impl
       tableName = "cart_books",
       idColumn = "id",
       idValue = id,
-      parser = CartBook.parser
+      parser = CartBook.parser,
+      softDeleteColumnName = "is_delete_cart_books"
     ).flatMap {
       case Some(cartBook) =>
         // Delete baris cart_books temp
@@ -159,7 +161,8 @@ class CartBookRepository @Inject() (db: Database, dbHelper: DatabaseHelper)(impl
       tableName = "cart_books",
       idColumn = "id",
       idValue = id,
-      parser = CartBook.parser
+      parser = CartBook.parser,
+      softDeleteColumnName = "is_delete_cart_books"
     ).flatMap {
       case Some(cartBook) =>
         // Delete baris cart_books permanen
@@ -197,7 +200,8 @@ class CartBookRepository @Inject() (db: Database, dbHelper: DatabaseHelper)(impl
       tableName = "cart_books",
       idColumn = "id",
       idValue = id,
-      parser = CartBook.parser
+      parser = CartBook.parser,
+      softDeleteColumnName = "is_delete_cart_books"
     )
   }
 
@@ -206,7 +210,8 @@ class CartBookRepository @Inject() (db: Database, dbHelper: DatabaseHelper)(impl
     dbHelper.findAll[CartBook](
       table = "cart_books",
       parser = CartBook.parser,
-      condition = Some(s"cart_id = $id")
+      condition = Some(s"cart_id = $id AND is_delete_cart_books = FALSE")
     )
   }
+
 }

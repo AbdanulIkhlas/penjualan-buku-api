@@ -1,0 +1,86 @@
+@import views.html.main
+@import views.html.components.header
+@(userId: Long, userName: String)(implicit request: RequestHeader)
+
+@main("Riwayat Transaksi") {
+    @header(userName, userId)
+
+    <div class="p-6 max-w-7xl mx-auto">
+        <h1 class="text-3xl font-bold mb-8 text-gray-800">Riwayat Transaksi</h1>
+
+        <div id="transactions-container" class="space-y-6">
+                <!-- Transaksi akan di-render oleh JS -->
+        </div>
+    </div>
+}
+
+<script>
+        const userId = @userId;
+        const baseUrl = window.location.origin;
+        const numberFormat = new Intl.NumberFormat("id-ID", { style: "currency", currency: "IDR" });
+
+        async function loadTransactions() {
+            const res = await fetch(`${baseUrl}/userTransaction/${userId}`);
+            const data = await res.json();
+
+            const container = document.getElementById("transactions-container");
+            container.innerHTML = "";
+
+            if(data.status !== "success") {
+                container.innerHTML = `<p class="text-red-500 font-semibold">${data.message}</p>`;
+                return;
+            }
+
+            const transactions = data.data;
+
+            transactions.forEach(trx => {
+                let booksHtml = "";
+                trx.books.forEach(book => {
+                    booksHtml += `
+                    <div class="flex justify-between py-2 border-b last:border-b-0">
+                        <div>
+                            <p class="font-medium text-gray-700">${book.title}</p>
+                            <p class="text-xs text-gray-500">Penulis: ${book.author} | Harga: ${numberFormat.format(book.unitPrice)}</p>
+                        </div>
+                        <div class="text-right">
+                            <p class="text-gray-700 font-semibold">${numberFormat.format(book.totalPrice)}</p>
+                            <p class="text-xs text-gray-500">x${book.quantity}</p>
+                        </div>
+                    </div>
+                `;
+                });
+
+                container.innerHTML += `
+                <div class="bg-white shadow-lg rounded-xl border p-6 hover:shadow-xl transition duration-200">
+                    <div class="flex justify-between items-center mb-4">
+                        <h2 class="text-lg font-bold text-gray-800">Transaksi #${trx.transactionId}</h2>
+                        <span class="text-sm text-gray-500">Cart ID: ${trx.cartId}</span>
+                    </div>
+
+                    <div class="grid grid-cols-1 gap-2 mb-4 border rounded-lg p-4 bg-gray-50">
+                        ${booksHtml}
+                    </div>
+
+                    <div class="space-y-1 text-gray-700">
+                        <div class="flex justify-between">
+                            <span class="font-semibold">Subtotal:</span>
+                            <span>${numberFormat.format(trx.cartPrice)}</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="font-semibold">Ongkir:</span>
+                            <span>${numberFormat.format(trx.deliveryFee)}</span>
+                        </div>
+                        <div class="flex justify-between font-bold text-gray-900 text-lg border-t pt-2 mt-2">
+                            <span>Total:</span>
+                            <span>${numberFormat.format(trx.totalPrice)}</span>
+                        </div>
+                    </div>
+                </div>
+            `;
+            });
+        }
+
+        document.addEventListener("DOMContentLoaded", () => {
+            loadTransactions();
+        });
+</script>

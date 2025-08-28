@@ -1,7 +1,8 @@
-package controllers
+package viewController
+
+import play.api.mvc._
 
 import javax.inject._
-import play.api.mvc._
 import scala.concurrent.ExecutionContext
 
 @Singleton

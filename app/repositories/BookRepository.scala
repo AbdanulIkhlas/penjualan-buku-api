@@ -102,7 +102,7 @@ class BookRepository @Inject() (db: Database, dbHelper: DatabaseHelper)(implicit
    * @return Future[Boolean] true jika stok cukup, false jika stok tidak cukup
    */
   def isStockAvailable(bookId: Long, qty: Int): Future[Boolean] = {
-    dbHelper.findByIdRow[Book]("books", "id", bookId, Book.parser).map {
+    dbHelper.findByIdRow[Book]("books", "id", bookId, Book.parser, "is_delete_books").map {
       case Some(book) => book.stock >= qty
       case None       => false
     }

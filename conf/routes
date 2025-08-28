@@ -60,6 +60,10 @@ DELETE  /transaction/permanent/:id        controllers.TransactionController.dele
 GET     /transaction                      controllers.TransactionController.getAllTransactions
 GET     /transaction/:id                  controllers.TransactionController.getTransactionById(id: Long)
 
+# UserTransaction
+GET     /userTransaction/:idUser          controllers.UserTransactionController.getUserTransactions(idUser: Long)
+
 # Pages
 # Product page
-GET     /products                         controllers.ProductController.products(id: Long, name: String)
+GET     /products                         viewController.ProductController.products(id: Long, name: String)
+GET     /history/:idUser/:userName                          viewController.TransactionHistoryController.historyTransaction(idUser: Long, userName: String)

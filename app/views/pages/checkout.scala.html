@@ -63,7 +63,7 @@
         async function confirmTransaction() {
             const messageEl = document.getElementById("message");
             try {
-                const res = await fetch(`${baseUrl}/transaction`, {
+                const res = await fetch(`${baseUrl}/transactionHistory`, {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
                     body: JSON.stringify({ cart_id: cartId, cart_price: cartPrice })
@@ -73,7 +73,7 @@
                     messageEl.textContent = "✅ Transaksi berhasil!";
                     messageEl.className = "mt-4 text-sm text-green-600";
                     setTimeout(() => {
-                        window.location.href = `/transaction/${userId}`;
+                        window.location.href = `/transactionHistory/${userId}`;
                     }, 2000);
                 } else {
                     messageEl.textContent = "❌ Gagal transaksi: " + data.message;

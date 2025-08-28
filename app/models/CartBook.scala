@@ -25,7 +25,8 @@ case class CartBook(
     book_id: Long,
     qty: Int,
     unit_price: BigDecimal,
-    total_price: BigDecimal
+    total_price: BigDecimal,
+    is_delete_cart_books: Boolean
 )
 
 object CartBook {
@@ -39,8 +40,9 @@ object CartBook {
       get[Long]("book_id") ~
       get[Int]("qty") ~
       get[BigDecimal]("unit_price") ~
-      get[BigDecimal]("total_price") map { case id ~ cart_id ~ book_id ~ qty ~ unit_price ~ total_price =>
-        CartBook(id, cart_id, book_id, qty, unit_price, total_price)
+      get[BigDecimal]("total_price") ~
+      get[Boolean]("is_delete_cart_books") map { case id ~ cart_id ~ book_id ~ qty ~ unit_price ~ total_price ~ is_delete_cart_books =>
+        CartBook(id, cart_id, book_id, qty, unit_price, total_price, is_delete_cart_books)
       }
   }
 }
