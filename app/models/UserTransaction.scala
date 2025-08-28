@@ -57,7 +57,15 @@ object UserTransaction {
       }
   }
 
-  /** Parser gabungan transaksi + buku untuk repository */
+  /** Parser gabungan transaksi + buku untuk repository
+   * @return :
+   *        Seq(
+   *        (trxA, bookA1),
+   *        (trxA, bookA2),
+   *        (trxB, bookB1),
+   *        ...
+   *        )
+   * */
   val transactionWithBookParser: RowParser[(UserTransaction, UserTransactionBook)] = {
     get[Long]("transaction_id") ~
       get[Long]("cart_id") ~
@@ -72,11 +80,11 @@ object UserTransaction {
       get[String]("title") ~
       get[String]("author") ~
       get[Double]("book_price") map {
-        case trxId ~ cartId ~ cartPrice ~ deliveryFee ~ totalPrice ~
+        case transactionId ~ cartId ~ cartPrice ~ deliveryFee ~ totalPrice ~
             cartBookId ~ quantity ~ unitPrice ~ bookTotal ~ bookId ~ title ~ author ~ price =>
-          val trx  = UserTransaction(trxId, cartId, cartPrice, deliveryFee, totalPrice, Seq.empty)
+          val transaction  = UserTransaction(transactionId, cartId, cartPrice, deliveryFee, totalPrice, Seq.empty)
           val book = UserTransactionBook(cartBookId, quantity, unitPrice, bookTotal, bookId, title, author, price)
-          (trx, book)
+          (transaction, book)
       }
   }
 }

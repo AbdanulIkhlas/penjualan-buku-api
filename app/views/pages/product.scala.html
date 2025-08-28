@@ -92,22 +92,28 @@
             renderBooks(allBooks);
         }
 
+        // tampilkan semua buku
         function renderBooks(books) {
             const container = document.getElementById("books-container");
             container.innerHTML = "";
+
+            // Urutkan buku berdasarkan judul (A-Z)
+            books.sort((a, b) => a.title.localeCompare(b.title));
+
             books.forEach(book => {
                 container.innerHTML += `
-                <div class="bg-white rounded shadow p-4 hover:scale-105 transition cursor-pointer"
-                     onclick="showBookDetail(${book.id})">
-                  <img src="@routes.Assets.versioned("images/dummy.png")"
-                       class="w-full h-40 object-cover rounded mb-2">
-                  <h4 class="font-bold">${book.title}</h4>
-                  <p class="text-sm text-gray-600">${book.author}</p>
-                  <p class="font-semibold text-green-600">${numberFormat.format(book.price)}</p>
-                </div>
-            `;
+            <div class="bg-white rounded shadow p-4 hover:scale-105 transition cursor-pointer"
+                 onclick="showBookDetail(${book.id})">
+              <img src="@routes.Assets.versioned("images/dummy.png")"
+                   class="w-full h-40 object-cover rounded mb-2">
+              <h4 class="font-bold">${book.title}</h4>
+              <p class="text-sm text-gray-600">${book.author}</p>
+              <p class="font-semibold text-green-600">${numberFormat.format(book.price)}</p>
+            </div>
+        `;
             });
         }
+
 
         // Ambil data buku terbaru dari backend
         async function refreshBook(bookId) {

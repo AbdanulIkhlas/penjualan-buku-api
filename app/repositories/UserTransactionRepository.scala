@@ -22,7 +22,7 @@ class UserTransactionRepository @Inject()(
         JOIN cart_books cb ON cb.cart_id = c.id
         JOIN books b ON b.id = cb.book_id
         WHERE c.user_id = {userId}
-        ORDER BY t.created_at DESC
+        ORDER BY t.created_at ASC
       """
 
     dbHelper.withConnection { implicit conn =>
@@ -34,7 +34,7 @@ class UserTransactionRepository @Inject()(
 
       // Grouping berdasarkan transactionId agar JSON rapi
       val grouped: Seq[UserTransaction] = rawData
-        .groupBy(_._1.transactionId)
+        .groupBy(_._1.transactionId) // ngambil rawData 1 (userTransaction) -> Map[Long, Seq[(UserTransaction, UserTransactionBook)]]
         .map { case (_, trxBooks) =>
           val firstTrx = trxBooks.head._1
           val books = trxBooks.map(_._2)
