@@ -138,7 +138,8 @@ class GenreRepository @Inject() (db: Database, dbHelper: DatabaseHelper)(implici
       tableName = "genres",
       idColumn = "id",
       idValue = id,
-      parser = Genre.parser
+      parser = Genre.parser,
+      softDeleteColumnName = "is_delete_genres"
     )
   }
 

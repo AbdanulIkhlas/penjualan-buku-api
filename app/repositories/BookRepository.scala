@@ -90,7 +90,8 @@ class BookRepository @Inject() (db: Database, dbHelper: DatabaseHelper)(implicit
       tableName = "books",
       idColumn = "id",
       idValue = id,
-      parser = Book.parser
+      parser = Book.parser,
+      softDeleteColumnName = "is_delete_books"
     )
   }
 

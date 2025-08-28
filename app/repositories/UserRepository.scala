@@ -111,7 +111,8 @@ class UserRepository @Inject() (db: Database, dbHelper: DatabaseHelper)(implicit
       tableName = "users",
       idColumn = "id",
       idValue = id,
-      parser = User.parser
+      parser = User.parser,
+      softDeleteColumnName = "is_delete_users"
     )
   }
 }

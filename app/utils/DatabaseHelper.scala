@@ -130,10 +130,10 @@ class DatabaseHelper @Inject() (db: Database)(implicit ec: ExecutionContext) {
     *   Future yang berisi jumlah baris yang terpengaruh (1 jika berhasil, 0 jika tidak ditemukan).
     */
   def softDeleteRowById(
-      tableName: String,           // nama tabel
-      idColumn: String,            // nama kolom id
-      idValue: Any,                // nilai id
-      softDeleteColumnName: String // nama kolom soft delete
+      tableName: String,
+      idColumn: String,
+      idValue: Any,
+      softDeleteColumnName: String
   ): Future[Int] = withTransaction { implicit connection =>
     println("[MARK] Masuk function softDeleteRowById db helper")
     // NOTE : // kan where $idColumn = {idValue}, nah di on nya jg harus sama, karena {idValue} maka on nya "idValue" -> idValue(nilai dari id di parameter)
@@ -207,11 +207,12 @@ class DatabaseHelper @Inject() (db: Database)(implicit ec: ExecutionContext) {
       tableName: String,
       idColumn: String,
       idValue: Any,
-      parser: RowParser[T]
+      parser: RowParser[T],
+      softDeleteColumnName: String
   ): Future[Option[T]] = withConnection { implicit connection =>
     println("[MARK] Masuk function findByIdRow db helper")
     println(s"[DEBUG] SQL Query findByIdRow: nama table : $tableName, nama kolom : $idColumn, value colom : $idValue")
-    val sql = SQL(s"SELECT * FROM $tableName WHERE $idColumn = {$idColumn}").on(idColumn -> idValue)
+    val sql = SQL(s"SELECT * FROM $tableName WHERE $idColumn = {$idColumn} AND $softDeleteColumnName = FALSE").on(idColumn -> idValue)
 
     sql.as(parser.singleOpt)
   }

@@ -66,7 +66,8 @@ class CartBookRepository @Inject() (db: Database, dbHelper: DatabaseHelper)(impl
       tableName = "cart_books",
       idColumn = "id",
       idValue = id,
-      parser = CartBook.parser
+      parser = CartBook.parser,
+      softDeleteColumnName = "is_delete_cart_books"
     ).flatMap {
       case Some(oldCartBook) =>
         println("old cart book : ", oldCartBook)

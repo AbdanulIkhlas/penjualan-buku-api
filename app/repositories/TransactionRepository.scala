@@ -103,7 +103,8 @@ class TransactionRepository @Inject() (db: Database, dbHelper: DatabaseHelper)(i
       tableName = "transactions",
       idColumn = "id",
       idValue = id,
-      parser = Transaction.parser
+      parser = Transaction.parser,
+      softDeleteColumnName = "is_delete_transactions"
     )
   }
 }

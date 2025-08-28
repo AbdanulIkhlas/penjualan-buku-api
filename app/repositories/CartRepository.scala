@@ -80,7 +80,8 @@ extends BaseRepository[Cart] {
       tableName = "cart",
       idColumn = "id",
       idValue = id,
-      parser = Cart.parser
+      parser = Cart.parser,
+      softDeleteColumnName = "is_delete_cart"
     )
   }
 
