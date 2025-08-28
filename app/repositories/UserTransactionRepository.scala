@@ -16,7 +16,7 @@ class UserTransactionRepository @Inject()(
       """
         SELECT t.id AS transaction_id, t.cart_id, t.cart_price, t.delivery_service_price, t.total_price,
                cb.id AS cart_book_id, cb.qty AS quantity, cb.unit_price, cb.total_price AS book_total_price,
-               b.id AS book_id, b.title, b.author, b.price AS book_price
+               b.id AS book_id, b.title, b.author, b.price AS book_price, c.created_at
         FROM transactions t
         JOIN cart c ON t.cart_id = c.id
         JOIN cart_books cb ON cb.cart_id = c.id

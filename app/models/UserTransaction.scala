@@ -3,6 +3,7 @@ package models
 import anorm._
 import anorm.SqlParser._
 import play.api.libs.json.{Json, OFormat}
+import java.time.LocalDateTime
 
 // Detail buku dalam transaksi
 case class UserTransactionBook(
@@ -41,6 +42,7 @@ case class UserTransaction(
     cartPrice: Double,
     deliveryFee: Double,
     totalPrice: Double,
+    createdAt: Option[LocalDateTime],
     books: Seq[UserTransactionBook]
 )
 
@@ -52,8 +54,9 @@ object UserTransaction {
       get[Long]("cart_id") ~
       get[Double]("cart_price") ~
       get[Double]("delivery_service_price") ~
-      get[Double]("total_price") map { case transactionId ~ cartId ~ cartPrice ~ deliveryFee ~ totalPrice =>
-        UserTransaction(transactionId, cartId, cartPrice, deliveryFee, totalPrice, Seq.empty)
+      get[Double]("total_price") ~
+      get[Option[LocalDateTime]]("created_at") map { case transactionId ~ cartId ~ cartPrice ~ deliveryFee ~ totalPrice ~ createdAt =>
+        UserTransaction(transactionId, cartId, cartPrice, deliveryFee, totalPrice, createdAt, Seq.empty)
       }
   }
 
@@ -72,6 +75,7 @@ object UserTransaction {
       get[Double]("cart_price") ~
       get[Double]("delivery_service_price") ~
       get[Double]("total_price") ~
+      get[Option[LocalDateTime]]("created_at")~
       get[Long]("cart_book_id") ~
       get[Int]("quantity") ~
       get[Double]("unit_price") ~
@@ -80,9 +84,9 @@ object UserTransaction {
       get[String]("title") ~
       get[String]("author") ~
       get[Double]("book_price") map {
-        case transactionId ~ cartId ~ cartPrice ~ deliveryFee ~ totalPrice ~
+        case transactionId ~ cartId ~ cartPrice ~ deliveryFee ~ totalPrice ~ createdAt ~
             cartBookId ~ quantity ~ unitPrice ~ bookTotal ~ bookId ~ title ~ author ~ price =>
-          val transaction  = UserTransaction(transactionId, cartId, cartPrice, deliveryFee, totalPrice, Seq.empty)
+          val transaction  = UserTransaction(transactionId, cartId, cartPrice, deliveryFee, totalPrice, createdAt, Seq.empty)
           val book = UserTransactionBook(cartBookId, quantity, unitPrice, bookTotal, bookId, title, author, price)
           (transaction, book)
       }

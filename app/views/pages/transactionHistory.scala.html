@@ -5,11 +5,18 @@
 @main("Riwayat Transaksi") {
     @header(userName, userId)
 
-    <div class="p-6 max-w-7xl mx-auto">
-        <h1 class="text-3xl font-bold mb-8 text-gray-800">Riwayat Transaksi</h1>
+    <div class="min-h-screen bg-gray-100 p-4 sm:p-6 lg:p-8">
+        <div class="max-w-4xl mx-auto">
+            <div class="flex items-center justify-between mb-8">
+                <h1 class="text-3xl sm:text-4xl font-extrabold text-blue-900 tracking-tight leading-tight">Riwayat Transaksi</h1>
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-8 h-8 text-blue-500 hidden sm:block">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v12m-3-2.818l-.879-.676M15 15.182l.879-.676M12 17.25c-1.015 0-1.928-.9-2.143-2.257-.144-.863-.393-1.63-.642-2.274-.144-.367-.34-.78-.585-1.125-.262-.365-.486-.774-.69-1.218a5.25 5.25 0 010-4.597c.204-.444.428-.853.69-1.218.245-.345.44-.758.585-1.125.249-.644.498-1.411.642-2.274C10.072 7.65 10.985 6.75 12 6.75s1.928.9 2.143 2.257c.144.863.393 1.63.642 2.274.144.367.34.78.585 1.125.262.365.486.774.69 1.218a5.25 5.25 0 010 4.597c-.204.444-.428.853-.69 1.218-.245.345-.44.758-.585 1.125-.249.644-.498 1.411-.642 2.274-.215 1.357-1.128 2.257-2.143 2.257z" />
+                </svg>
+            </div>
 
-        <div id="transactions-container" class="space-y-6">
-                <!-- Transaksi akan di-render oleh JS -->
+            <div id="transactions-container" class="space-y-6">
+                <p class="text-center text-gray-500 font-semibold mt-10 animate-pulse">Memuat riwayat transaksi...</p>
+            </div>
         </div>
     </div>
 }
@@ -19,65 +26,138 @@
         const baseUrl = window.location.origin;
         const numberFormat = new Intl.NumberFormat("id-ID", { style: "currency", currency: "IDR" });
 
+        function formatTanggalIndo(isoString) {
+            const date = new Date(isoString);
+
+            const bulanIndo = [
+                "Januari", "Februari", "Maret", "April", "Mei", "Juni",
+                "Juli", "Agustus", "September", "Oktober", "November", "Desember"
+            ];
+
+            const tgl = date.getDate();
+            const bln = bulanIndo[date.getMonth()];
+            const thn = date.getFullYear();
+
+            const jam = String(date.getHours()).padStart(2, "0");
+            const menit = String(date.getMinutes()).padStart(2, "0");
+
+            return {
+                tanggal: `${tgl} ${bln} ${thn}`,
+                jam: `${jam}.${menit} WIB`
+            };
+        }
+
         async function loadTransactions() {
-            const res = await fetch(`${baseUrl}/userTransaction/${userId}`);
-            const data = await res.json();
-
             const container = document.getElementById("transactions-container");
-            container.innerHTML = "";
+            container.innerHTML = `<p class="text-center text-gray-500 font-semibold mt-10 animate-pulse">Memuat riwayat transaksi...</p>`;
 
-            if(data.status !== "success") {
-                container.innerHTML = `<p class="text-red-500 font-semibold">${data.message}</p>`;
-                return;
-            }
+            try {
+                const res = await fetch(`${baseUrl}/userTransaction/${userId}`);
+                const data = await res.json();
 
-            const transactions = data.data;
+                container.innerHTML = "";
 
-            transactions.forEach(trx => {
-                let booksHtml = "";
-                trx.books.forEach(book => {
-                    booksHtml += `
-                    <div class="flex justify-between py-2 border-b last:border-b-0">
-                        <div>
-                            <p class="font-medium text-gray-700">${book.title}</p>
-                            <p class="text-xs text-gray-500">Penulis: ${book.author} | Harga: ${numberFormat.format(book.unitPrice)}</p>
+                if (data.status !== "success" || !data.data || data.data.length === 0) {
+                    container.innerHTML = `
+                    <div class="flex flex-col items-center justify-center p-10 bg-white rounded-lg shadow-md text-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-16 h-16 text-red-400 mb-4">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.174 3.352 1.98 3.352h14.5c1.806 0 2.842-1.852 1.979-3.352l-7.25-12.75A1.89 1.89 0 0012 2.25c-.534 0-1.056.241-1.393.654L2.697 16.751z" />
+                        </svg>
+                        <p class="text-xl font-semibold text-gray-600">Tidak ada riwayat transaksi yang ditemukan.</p>
+                        <p class="text-sm text-gray-500 mt-2">Mungkin Anda belum melakukan pembelian.</p>
+                    </div>
+                `;
+                    return;
+                }
+
+                const transactions = data.data;
+
+                transactions.forEach(trx => {
+                    let booksHtml = "";
+                    const waktu = formatTanggalIndo(trx.createdAt);
+
+                    trx.books.forEach(book => {
+                        booksHtml += `
+                        <div class="flex items-center gap-4 py-3 border-b border-gray-200 last:border-b-0">
+                            <div class="flex-shrink-0 w-16 h-16 bg-gray-200 rounded-lg overflow-hidden">
+                                <img src="@routes.Assets.versioned("images/dummy.png")" alt="${book.title}" class="w-full h-full object-cover">
+                            </div>
+                            <div class="flex-grow">
+                                <p class="font-semibold text-gray-800">${book.title}</p>
+                                <p class="text-sm text-gray-500 truncate">Penulis: ${book.author}</p>
+                                <p class="text-xs text-gray-400">Harga: ${numberFormat.format(book.unitPrice)}</p>
+                            </div>
+                            <div class="text-right flex-shrink-0">
+                                <p class="font-bold text-gray-900">${numberFormat.format(book.totalPrice)}</p>
+                                <p class="text-sm text-gray-500">x${book.quantity}</p>
+                            </div>
                         </div>
-                        <div class="text-right">
-                            <p class="text-gray-700 font-semibold">${numberFormat.format(book.totalPrice)}</p>
-                            <p class="text-xs text-gray-500">x${book.quantity}</p>
+                    `;
+                    });
+
+                    container.innerHTML += `
+                    <div class="bg-white shadow-xl rounded-2xl p-6 transform hover:scale-[1.01] transition-transform duration-300 ease-in-out">
+                        <div class="flex justify-between items-center mb-4 pb-4 border-b border-gray-200">
+                            <div class="flex items-center gap-3">
+                                <div class="bg-blue-100 text-blue-600 rounded-full p-2">
+                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 7.125C2.25 6.504 2.754 6 3.375 6h6c.621 0 1.125.504 1.125 1.125v3.75c0 .621-.504 1.125-1.125 1.125h-6a1.125 1.125 0 0 1-1.125-1.125v-3.75ZM14.25 8.625c0-.621.504-1.125 1.125-1.125h5.25c.621 0 1.125.504 1.125 1.125v8.25c0 .621-.504 1.125-1.125 1.125h-5.25a1.125 1.125 0 0 1-1.125-1.125v-8.25ZM3.75 16.125c0-.621.504-1.125 1.125-1.125h5.25c.621 0 1.125.504 1.125 1.125v2.25c0 .621-.504 1.125-1.125 1.125h-5.25a1.125 1.125 0 0 1-1.125-1.125v-2.25Z" />
+                                    </svg>
+                                </div>
+                                <div>
+                                    <h2 class="text-lg sm:text-xl font-bold text-blue-900">Transaksi #${trx.transactionId}</h2>
+                                    <p class="text-sm text-gray-500">Cart ID: ${trx.cartId}</p>
+                                </div>
+                            </div>
+                            <div class="text-right">
+                                <div class="flex items-center gap-1 text-sm text-gray-500">
+                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-4 h-4 text-blue-400">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 012.25-2.25h13.5A2.25 2.25 0 0121 7.5v11.25m-18 0A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75m-18 0v-7.5A2.25 2.25 0 015.25 9h13.5A2.25 2.25 0 0121 11.25v7.5m-9-6h.008v.008H12v-.008zM12 15h.008v.008H12V15z" />
+                                    </svg>
+                                    ${waktu.tanggal}
+                                </div>
+                                <div class="flex items-center gap-1 text-sm text-gray-500">
+                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-4 h-4 text-blue-400">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                    </svg>
+                                    ${waktu.jam}
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="space-y-4">
+                            ${booksHtml}
+                        </div>
+
+                        <div class="mt-6 pt-4 border-t border-gray-200 space-y-2">
+                            <div class="flex justify-between items-center text-gray-600">
+                                <span class="font-medium">Subtotal</span>
+                                <span class="text-gray-800 font-semibold">${numberFormat.format(trx.cartPrice)}</span>
+                            </div>
+                            <div class="flex justify-between items-center text-gray-600">
+                                <span class="font-medium">Ongkir</span>
+                                <span class="text-gray-800 font-semibold">${numberFormat.format(trx.deliveryFee)}</span>
+                            </div>
+                            <div class="flex justify-between items-center font-bold text-gray-900 text-xl border-t-2 border-blue-200 pt-4 mt-4">
+                                <span>Total</span>
+                                <span class="text-blue-600">${numberFormat.format(trx.totalPrice)}</span>
+                            </div>
                         </div>
                     </div>
                 `;
                 });
-
-                container.innerHTML += `
-                <div class="bg-white shadow-lg rounded-xl border p-6 hover:shadow-xl transition duration-200">
-                    <div class="flex justify-between items-center mb-4">
-                        <h2 class="text-lg font-bold text-gray-800">Transaksi #${trx.transactionId}</h2>
-                        <span class="text-sm text-gray-500">Cart ID: ${trx.cartId}</span>
-                    </div>
-
-                    <div class="grid grid-cols-1 gap-2 mb-4 border rounded-lg p-4 bg-gray-50">
-                        ${booksHtml}
-                    </div>
-
-                    <div class="space-y-1 text-gray-700">
-                        <div class="flex justify-between">
-                            <span class="font-semibold">Subtotal:</span>
-                            <span>${numberFormat.format(trx.cartPrice)}</span>
-                        </div>
-                        <div class="flex justify-between">
-                            <span class="font-semibold">Ongkir:</span>
-                            <span>${numberFormat.format(trx.deliveryFee)}</span>
-                        </div>
-                        <div class="flex justify-between font-bold text-gray-900 text-lg border-t pt-2 mt-2">
-                            <span>Total:</span>
-                            <span>${numberFormat.format(trx.totalPrice)}</span>
-                        </div>
-                    </div>
+            } catch (error) {
+                console.error("Failed to load transactions:", error);
+                container.innerHTML = `
+                <div class="flex flex-col items-center justify-center p-10 bg-white rounded-lg shadow-md text-center">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-16 h-16 text-red-400 mb-4">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m9.303-9.195a.75.75 0 00-.285-.929l-3.328-1.745a.75.75 0 00-.912.285L3.755 12.001c-.242.423-.075.922.348 1.164l3.328 1.745a.75.75 0 00.912-.285L19.462 4.19a.75.75 0 00.285.929z" />
+                    </svg>
+                    <p class="text-xl font-semibold text-gray-600">Gagal memuat riwayat transaksi.</p>
+                    <p class="text-sm text-gray-500 mt-2">Terjadi kesalahan pada server. Silakan coba lagi nanti.</p>
                 </div>
             `;
-            });
+            }
         }
 
         document.addEventListener("DOMContentLoaded", () => {
