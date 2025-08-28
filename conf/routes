@@ -11,61 +11,61 @@ GET     /assets/*file               controllers.Assets.versioned(path="/public",
 
 
 # Genres
-POST    /genres                     controllers.GenreController.createGenre
-PUT     /genres/:id                 controllers.GenreController.updateGenre(id: Long)
-DELETE  /genres/:id                 controllers.GenreController.softDeleteGenre(id: Long)
-DELETE  /genres/permanent/:id       controllers.GenreController.deleteGenre(id: Long)
-GET     /genres                     controllers.GenreController.getAllGenres
-GET     /genres/:id                 controllers.GenreController.getGenreById(id: Long)
+POST    /genres                             controllers.GenreController.createGenre
+PUT     /genres/:id                         controllers.GenreController.updateGenre(id: Long)
+DELETE  /genres/:id                         controllers.GenreController.softDeleteGenre(id: Long)
+DELETE  /genres/permanent/:id               controllers.GenreController.deleteGenre(id: Long)
+GET     /genres                             controllers.GenreController.getAllGenres
+GET     /genres/:id                         controllers.GenreController.getGenreById(id: Long)
 
 # Users
-POST    /users                      controllers.UserController.createUser
-PUT     /users/:id                  controllers.UserController.updateUser(id: Long)
-DELETE  /users/:id                  controllers.UserController.softDeleteUser(id: Long)
-DELETE  /users/permanent/:id        controllers.UserController.deleteUser(id: Long)
-GET     /users                      controllers.UserController.getAllUsers
-GET     /users/:id                  controllers.UserController.getUserById(id: Long)
+POST    /users                              controllers.UserController.createUser
+PUT     /users/:id                          controllers.UserController.updateUser(id: Long)
+DELETE  /users/:id                          controllers.UserController.softDeleteUser(id: Long)
+DELETE  /users/permanent/:id                controllers.UserController.deleteUser(id: Long)
+GET     /users                              controllers.UserController.getAllUsers
+GET     /users/:id                          controllers.UserController.getUserById(id: Long)
 
 # Books
-POST    /books                      controllers.BookController.createBook
-PUT     /books/:id                  controllers.BookController.updateBook(id: Long)
-DELETE  /books/:id                  controllers.BookController.softDeleteBook(id: Long)
-DELETE  /books/permanent/:id        controllers.BookController.deleteBook(id: Long)
-GET     /books                      controllers.BookController.getAllBooks
-GET     /books/:id                  controllers.BookController.getBookById(id: Long)
+POST    /books                              controllers.BookController.createBook
+PUT     /books/:id                          controllers.BookController.updateBook(id: Long)
+DELETE  /books/:id                          controllers.BookController.softDeleteBook(id: Long)
+DELETE  /books/permanent/:id                controllers.BookController.deleteBook(id: Long)
+GET     /books                              controllers.BookController.getAllBooks
+GET     /books/:id                          controllers.BookController.getBookById(id: Long)
 
 # Cart
-POST    /cart                      controllers.CartController.createCart
-PUT     /cart/:id                  controllers.CartController.updateCart(id: Long)
-DELETE  /cart/:id                  controllers.CartController.softDeleteCart(id: Long)
-DELETE  /cart/permanent/:id        controllers.CartController.deleteCart(id: Long)
-GET     /cart                      controllers.CartController.getAllCarts
-GET     /cart/:id                  controllers.CartController.getCartById(id: Long)
-GET     /cart/id-user/:id          controllers.CartController.getCartByIdUser(id: Long)
+POST    /cart                               controllers.CartController.createCart
+PUT     /cart/:id                           controllers.CartController.updateCart(id: Long)
+DELETE  /cart/:id                           controllers.CartController.softDeleteCart(id: Long)
+DELETE  /cart/permanent/:id                 controllers.CartController.deleteCart(id: Long)
+GET     /cart                               controllers.CartController.getAllCarts
+GET     /cart/:id                           controllers.CartController.getCartById(id: Long)
+GET     /cart/id-user/:id                   controllers.CartController.getCartByIdUser(id: Long)
 
 # CartBooks
-POST    /cartBook                      controllers.CartBookController.createCartBook
-PUT     /cartBook/:id                  controllers.CartBookController.updateCartBook(id: Long)
-DELETE  /cartBook/:id                  controllers.CartBookController.softDeleteCartBook(id: Long)
-DELETE  /cartBook/permanent/:id        controllers.CartBookController.deleteCartBook(id: Long)
-GET     /cartBook                      controllers.CartBookController.getAllCartBooks
-GET     /cartBook/:id                  controllers.CartBookController.getCartBookById(id: Long)
-GET     /cartBook/id-cart/:id          controllers.CartBookController.getCartBookByIdCart(id: Long)
+POST    /cartBook                           controllers.CartBookController.createCartBook
+PUT     /cartBook/:id                       controllers.CartBookController.updateCartBook(id: Long)
+DELETE  /cartBook/:id                       controllers.CartBookController.softDeleteCartBook(id: Long)
+DELETE  /cartBook/permanent/:id             controllers.CartBookController.deleteCartBook(id: Long)
+GET     /cartBook                           controllers.CartBookController.getAllCartBooks
+GET     /cartBook/:id                       controllers.CartBookController.getCartBookById(id: Long)
+GET     /cartBook/id-cart/:id               controllers.CartBookController.getCartBookByIdCart(id: Long)
 
 # Transaction
-POST    /transaction                      controllers.TransactionController.createTransaction
-PUT     /transaction/:id                  controllers.TransactionController.updateTransaction(id: Long)
-DELETE  /transaction/:id                  controllers.TransactionController.softDeleteTransaction(id: Long)
-DELETE  /transaction/permanent/:id        controllers.TransactionController.deleteTransaction(id: Long)
-GET     /transaction                      controllers.TransactionController.getAllTransactions
-GET     /transaction/:id                  controllers.TransactionController.getTransactionById(id: Long)
+POST    /transaction                        controllers.TransactionController.createTransaction
+PUT     /transaction/:id                    controllers.TransactionController.updateTransaction(id: Long)
+DELETE  /transaction/:id                    controllers.TransactionController.softDeleteTransaction(id: Long)
+DELETE  /transaction/permanent/:id          controllers.TransactionController.deleteTransaction(id: Long)
+GET     /transaction                        controllers.TransactionController.getAllTransactions
+GET     /transaction/:id                    controllers.TransactionController.getTransactionById(id: Long)
 
 # UserTransaction
-GET     /userTransaction/:idUser          controllers.UserTransactionController.getUserTransactions(idUser: Long)
+GET     /userTransaction/:idUser            controllers.UserTransactionController.getUserTransactions(idUser: Long)
 
 # Pages
 # Product page
-GET     /products                         viewController.ProductController.products(id: Long, name: String)
-GET     /history/:idUser/:userName        viewController.TransactionHistoryController.historyTransaction(idUser: Long, userName: String)
-GET     /add-book/:userId/:userName        viewController.AddBookController.showAddBookPage(userId: Long, userName: String)
+GET     /products                           viewController.ProductController.products(id: Long, name: String)
+GET     /history/:idUser/:userName          viewController.TransactionHistoryController.historyTransaction(idUser: Long, userName: String)
+GET     /add-book/:userId/:userName         viewController.AddBookController.showAddBookPage(userId: Long, userName: String)
 
