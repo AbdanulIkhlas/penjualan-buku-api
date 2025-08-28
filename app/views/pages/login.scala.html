@@ -12,7 +12,8 @@ Mengecek ke API /users dan redirect ke halaman produk jika email cocok.
             <h1 class="text-4xl font-extrabold text-blue-900 tracking-tight">KLAZB<span class="text-xl">OOK</span> ZTORE</h1>
         </div>
         <p class="text-gray-700 text-lg mb-2">Selamat datang!</p>
-        <p class="text-gray-600 text-sm mb-6">Masukkan email Anda untuk melanjutkan.</p>
+        <p class="text-gray-600 text-sm">Masukkan email Anda untuk melanjutkan.</p>
+        <p class="text-red-500 text-xs mb-6">(Belum punya akun? minta ke admin)</p>
 
         <form onsubmit="handleLogin(event)">
             <input type="email" id="email"
@@ -56,7 +57,7 @@ Mengecek ke API /users dan redirect ke halaman produk jika email cocok.
               messageEl.classList.add("text-green-600");
               setTimeout(() => {
                   window.location.href = `/products?id=${user.id}&name=${encodeURIComponent(user.name)}`;
-              }, 1000); // Redirect setelah 1 detik
+              }, 1000);
           } else {
               messageEl.textContent = "Email tidak ditemukan. Silakan coba lagi.";
               messageEl.classList.remove("text-green-600", "text-gray-500", "animate-pulse");
